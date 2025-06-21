@@ -3,8 +3,9 @@
 set -ex
 
 sed -i 's/DownloadUser/#DownloadUser/g' /etc/pacman.conf
+ARCH="$(uname -m)"
 
-if [ "$(uname -m)" = 'x86_64' ]; then
+if [ "$ARCH" = 'x86_64' ]; then
 	PKG_TYPE='x86_64.pkg.tar.zst'
 else
 	PKG_TYPE='aarch64.pkg.tar.xz'
@@ -72,6 +73,7 @@ cat /etc/makepkg.conf
 
 git clone https://aur.archlinux.org/gpu-screen-recorder.git ./gpu-screen-recorder && (
 	cd ./gpu-screen-recorder
+	sed -i -e "s|x86_64|$ARCH|" ./PKGBUILD
 	# modify gpu-screen-recorder to build without systemd and wihtout caps
 	sed -i 's|-Dsystemd=true|-Dsystemd=false -Dcapabilities=false|' ./PKGBUILD
 	makepkg -f
@@ -82,6 +84,7 @@ git clone https://aur.archlinux.org/gpu-screen-recorder.git ./gpu-screen-recorde
 # now the rest
 git clone https://aur.archlinux.org/gpu-screen-recorder-gtk.git ./gpu-gtk && (
 	cd ./gpu-gtk
+	sed -i -e "s|x86_64|$ARCH|" ./PKGBUILD
 	makepkg -f
 	ls -la .
 	pacman --noconfirm -U *.pkg.tar.*
@@ -89,6 +92,7 @@ git clone https://aur.archlinux.org/gpu-screen-recorder-gtk.git ./gpu-gtk && (
 
 git clone https://aur.archlinux.org/gpu-screen-recorder-notification.git ./notification && (
 	cd ./notification
+	sed -i -e "s|x86_64|$ARCH|" ./PKGBUILD
 	makepkg -f
 	ls -la .
 	pacman --noconfirm -U *.pkg.tar.*
@@ -96,6 +100,7 @@ git clone https://aur.archlinux.org/gpu-screen-recorder-notification.git ./notif
 
 git clone https://aur.archlinux.org/gpu-screen-recorder-ui.git ./gpu-ui && (
 	cd ./gpu-ui
+	sed -i -e "s|x86_64|$ARCH|" ./PKGBUILD
 	makepkg -f
 	ls -la .
 	pacman --noconfirm -U *.pkg.tar.*
