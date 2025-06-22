@@ -28,8 +28,6 @@ mkdir -p ./AppDir/share/icons/hicolor/32x32 && (
 	xvfb-run -a \
 		./sharun-aio l -p -v -e -s -k \
 		/usr/bin/gpu-screen-recorder* \
-		/usr/bin/gsr-dbus-server      \
-		/usr/bin/gsr-notify           \
 		/usr/bin/gsr-*                \
 		/usr/lib/gdk-pixbuf-*/*/*/*   \
 		/usr/lib/pulseaudio/*         \
