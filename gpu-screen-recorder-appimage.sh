@@ -69,7 +69,6 @@ mkdir -p ./AppDir/share/icons/hicolor/32x32 && (
 	# hack to get capabities working
 	if [ ! -f /tmp/.gsr-appimage-hack/sharun ]; then
 	        cp "$APPDIR"/sharun* ./
-
 	        ln -f ./sharun  ./bin/gpu-screen-recorder
 	        ln -f ./sharun  ./bin/gpu-screen-recorder-gtk
 	        ln -f ./sharun  ./bin/gsr-dbus-server
@@ -80,10 +79,10 @@ mkdir -p ./AppDir/share/icons/hicolor/32x32 && (
 	        ln -f ./sharun3 ./bin/gsr-kms-server
 	fi
 
-	ln -sfn "$APPDIR"/etc     /tmp/.gsr-appimage-hack
-	ln -sfn "$APPDIR"/lib     /tmp/.gsr-appimage-hack
-	ln -sfn "$APPDIR"/share   /tmp/.gsr-appimage-hack
-	ln -sfn "$APPDIR"/shared  /tmp/.gsr-appimage-hack
+	ln -sfn "$APPDIR"/etc     /tmp/.gsr-appimage-hack/etc
+	ln -sfn "$APPDIR"/lib     /tmp/.gsr-appimage-hack/lib
+	ln -sfn "$APPDIR"/share   /tmp/.gsr-appimage-hack/share
+	ln -sfn "$APPDIR"/shared  /tmp/.gsr-appimage-hack/shared
 
 	if [ -z "$(getcap /tmp/.gsr-appimage-hack/bin/*)" ]; then
 	        pkexec sh -c 'setcap cap_setuid+ep /tmp/.gsr-appimage-hack/bin/gsr-global-hotkeys \
