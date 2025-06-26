@@ -33,7 +33,8 @@ jobs:
         chmod +x ./*-appimage.sh 
         ./*-appimage.sh
         mkdir dist
-        mv *.AppImage* dist/
+        mv ./*.AppImage* ./dist
+        mv ./*.AppBundle* ./dist
 
     - name: Check version file
       run: |
@@ -96,6 +97,7 @@ jobs:
             make_latest: true
             files: |
               *.AppImage*
+              *.AppBundle*
           continue-on-error: false
 
         #Snapshot Release
@@ -115,4 +117,5 @@ jobs:
             make_latest: false
             files: |
               *.AppImage*
+              *.AppBundle*
           continue-on-error: false
