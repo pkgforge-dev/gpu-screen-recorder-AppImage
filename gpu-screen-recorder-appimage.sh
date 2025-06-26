@@ -122,7 +122,20 @@ echo "Generating AppImage..."
 	--header uruntime-lite               \
 	-i ./AppDir -o ./gpu-screen-recorder-"$VERSION"-anylinux-"$ARCH".AppImage
 
+UPINFO="$(echo "$UPINFO" | sed 's#.AppImage.zsync#*.AppBundle.zsync#g')"
+wget -O ./pelf "https://github.com/xplshn/pelf/releases/latest/download/pelf_$ARCH" 
+chmod +x ./pelf
+echo "Generating [dwfs]AppBundle..."
+./pelf --add-appdir ./AppDir                  \
+	--appimage-compat                         \
+	--disable-use-random-workdir              \
+	--add-updinfo "$UPINFO"                   \
+	--compression "-C zstd:level=22 -S25 -B8" \
+	--appbundle-id="com.dec05eba.gpu_screen_recorder#github.com/$GITHUB_REPOSITORY:$VERSION@$(date +%d_%m_%Y)" \
+	--output-to ./gpu-screen-recorder-"$VERSION"-anylinux-"$ARCH".dwfs.AppBundle
+
 echo "Generating zsync file..."
-zsyncmake *.AppImage -u *.AppImage
+zsyncmake ./*.AppImage -u ./*.AppImage
+zsyncmake ./*.AppBundle -u ./*.AppBundle
 
 echo "All Done!"
