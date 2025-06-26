@@ -130,7 +130,7 @@ echo "Generating [dwfs]AppBundle..."
 	--appimage-compat                         \
 	--disable-use-random-workdir              \
 	--add-updinfo "$UPINFO"                   \
-	--compression "-C zstd:level=22 -S25 -B8" \
+	--compression "-C zstd:level=22 -S26 -B8" \
 	--appbundle-id="com.dec05eba.gpu_screen_recorder#github.com/$GITHUB_REPOSITORY:$VERSION@$(date +%d_%m_%Y)" \
 	--output-to ./gpu-screen-recorder-"$VERSION"-anylinux-"$ARCH".dwfs.AppBundle
 
