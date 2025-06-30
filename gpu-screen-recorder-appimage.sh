@@ -37,7 +37,8 @@ mkdir -p ./AppDir/share/icons/hicolor/32x32 && (
 		/usr/lib/libavformat.so*      \
 		/usr/lib/lib*GL*              \
 		/usr/lib/dri/*                \
-		/usr/lib/vdpau/*
+		/usr/lib/vdpau/*              \
+		/usr/lib/gconv/*
 
 	rm -f ./sharun-aio ./bin/gsr-global-hotkeys ./bin/gsr-kms-server
 
