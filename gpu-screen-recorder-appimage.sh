@@ -106,6 +106,9 @@ mkdir -p ./AppDir/share/icons/hicolor/32x32 && (
 	./sharun -g
 )
 
+# Make intel hardware accel work
+echo 'LIBVA_DRIVERS_PATH=${SHARUN_DIR}/shared/lib:${SHARUN_DIR}/shared/lib/dri' >> ./.env
+
 # MAKE APPIAMGE WITH URUNTIME
 wget --retry-connrefused --tries=30 "$URUNTIME"      -O ./uruntime
 wget --retry-connrefused --tries=30 "$URUNTIME_LITE" -O ./uruntime-lite
@@ -124,7 +127,7 @@ echo "Generating AppImage..."
 	-i ./AppDir -o ./gpu-screen-recorder-"$VERSION"-anylinux-"$ARCH".AppImage
 
 UPINFO="$(echo "$UPINFO" | sed 's#.AppImage.zsync#*.AppBundle.zsync#g')"
-wget -O ./pelf "https://github.com/xplshn/pelf/releases/latest/download/pelf_$ARCH" 
+wget -O ./pelf "https://github.com/xplshn/pelf/releases/latest/download/pelf_$ARCH"
 chmod +x ./pelf
 echo "Generating [dwfs]AppBundle..."
 ./pelf --add-appdir ./AppDir                  \

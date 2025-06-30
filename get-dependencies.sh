@@ -34,6 +34,7 @@ pacman -Syu --noconfirm       \
 	glibc                   \
 	gtk3                    \
 	hicolor-icon-theme      \
+	intel-media-driver      \
 	libayatana-appindicator \
 	libglvnd                \
 	libpulse                \
