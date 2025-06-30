@@ -56,6 +56,7 @@ mkdir -p ./AppDir/share/icons/hicolor/32x32 && (
 	#!/bin/sh
 	set -e
 	APPDIR="$(cd "${0%/*}" && echo "$PWD")"
+	export LIBVA_DRIVERS_PATH="$APPDIR/shared/lib:$APPDIR/shared/lib/dri"
 	BIN="${ARGV0:-$0}"
 	BIN="${BIN#./}"
 	unset ARGV0
@@ -105,9 +106,6 @@ mkdir -p ./AppDir/share/icons/hicolor/32x32 && (
 	chmod +x ./AppRun
 	./sharun -g
 )
-
-# Make intel hardware accel work
-echo 'LIBVA_DRIVERS_PATH=${SHARUN_DIR}/shared/lib:${SHARUN_DIR}/shared/lib/dri' >> ./.env
 
 # MAKE APPIAMGE WITH URUNTIME
 wget --retry-connrefused --tries=30 "$URUNTIME"      -O ./uruntime
