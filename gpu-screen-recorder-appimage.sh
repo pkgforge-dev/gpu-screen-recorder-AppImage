@@ -61,6 +61,15 @@ mkdir -p ./AppDir/share/icons/hicolor/32x32 && (
 	BIN="${BIN#./}"
 	unset ARGV0
 
+	dependencies="getcap pkexec"
+	for dep in $dependencies; do
+		if ! command -v $dep 1>/dev/null; then
+			>&2 echo "ERROR: Missing dependency '$dep'"
+			notify-send -u critical "ERROR: Missing dependency '$dep'"
+			exit 1
+		fi
+	done
+
 	mkdir -p /tmp/.gsr-appimage-hack/bin
 
 	# change working dir since we did binary patching
