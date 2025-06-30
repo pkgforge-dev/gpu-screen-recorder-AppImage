@@ -1,24 +1,8 @@
 #!/bin/sh
 
 set -ex
-
-sed -i 's/DownloadUser/#DownloadUser/g' /etc/pacman.conf
 ARCH="$(uname -m)"
 
-if [ "$ARCH" = 'x86_64' ]; then
-	PKG_TYPE='x86_64.pkg.tar.zst'
-else
-	PKG_TYPE='aarch64.pkg.tar.xz'
-fi
-
-LLVM_URL="https://github.com/pkgforge-dev/llvm-libs-debloated/releases/download/continuous/llvm-libs-nano-$PKG_TYPE"
-FFMPEG_URL="https://github.com/pkgforge-dev/llvm-libs-debloated/releases/download/continuous/ffmpeg-mini-$PKG_TYPE"
-LIBXML_URL="https://github.com/pkgforge-dev/llvm-libs-debloated/releases/download/continuous/libxml2-iculess-$PKG_TYPE"
-OPUS_URL="https://github.com/pkgforge-dev/llvm-libs-debloated/releases/download/continuous/opus-nano-$PKG_TYPE"
-MESA_URL="https://github.com/pkgforge-dev/llvm-libs-debloated/releases/download/continuous/mesa-mini-$PKG_TYPE"
-
-echo "Installing dependencies..."
-echo "---------------------------------------------------------------"
 pacman -Syu --noconfirm       \
 	alsa-lib                \
 	base-devel              \
@@ -34,7 +18,6 @@ pacman -Syu --noconfirm       \
 	glibc                   \
 	gtk3                    \
 	hicolor-icon-theme      \
-	intel-media-driver      \
 	libayatana-appindicator \
 	libglvnd                \
 	libpulse                \
@@ -53,6 +36,26 @@ pacman -Syu --noconfirm       \
 	xorg-server-xvfb        \
 	zlib                    \
 	zsync
+
+case "$ARCH" in
+	'x86_64')
+		PKG_TYPE='x86_64.pkg.tar.zst'
+		pacman -Syu --noconfirm intel-media-driver
+		;;
+	'aarch64')
+		PKG_TYPE='aarch64.pkg.tar.xz'
+		;;
+	''|*)
+		echo "Unknown cpu arch: $ARCH"
+		exit 1
+		;;
+esac
+
+LLVM_URL="https://github.com/pkgforge-dev/llvm-libs-debloated/releases/download/continuous/llvm-libs-nano-$PKG_TYPE"
+FFMPEG_URL="https://github.com/pkgforge-dev/llvm-libs-debloated/releases/download/continuous/ffmpeg-mini-$PKG_TYPE"
+LIBXML_URL="https://github.com/pkgforge-dev/llvm-libs-debloated/releases/download/continuous/libxml2-iculess-$PKG_TYPE"
+OPUS_URL="https://github.com/pkgforge-dev/llvm-libs-debloated/releases/download/continuous/opus-nano-$PKG_TYPE"
+MESA_URL="https://github.com/pkgforge-dev/llvm-libs-debloated/releases/download/continuous/mesa-mini-$PKG_TYPE"
 
 echo "Installing debloated pckages..."
 echo "---------------------------------------------------------------"
