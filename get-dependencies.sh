@@ -38,17 +38,9 @@ pacman -Syu --noconfirm       \
 	zsync
 
 case "$ARCH" in
-	'x86_64')
-		PKG_TYPE='x86_64.pkg.tar.zst'
-		pacman -Syu --noconfirm intel-media-driver
-		;;
-	'aarch64')
-		PKG_TYPE='aarch64.pkg.tar.xz'
-		;;
-	''|*)
-		echo "Unknown cpu arch: $ARCH"
-		exit 1
-		;;
+	'x86_64')  PKG_TYPE='x86_64.pkg.tar.zst';;
+	'aarch64') PKG_TYPE='aarch64.pkg.tar.xz';;
+	''|*) echo "Unknown arch: $ARCH"; exit 1;;
 esac
 
 LLVM_URL="https://github.com/pkgforge-dev/llvm-libs-debloated/releases/download/continuous/llvm-libs-nano-$PKG_TYPE"
@@ -56,6 +48,7 @@ FFMPEG_URL="https://github.com/pkgforge-dev/llvm-libs-debloated/releases/downloa
 LIBXML_URL="https://github.com/pkgforge-dev/llvm-libs-debloated/releases/download/continuous/libxml2-iculess-$PKG_TYPE"
 OPUS_URL="https://github.com/pkgforge-dev/llvm-libs-debloated/releases/download/continuous/opus-nano-$PKG_TYPE"
 MESA_URL="https://github.com/pkgforge-dev/llvm-libs-debloated/releases/download/continuous/mesa-mini-$PKG_TYPE"
+INTEL_MEDIA_URL="https://github.com/pkgforge-dev/llvm-libs-debloated/releases/download/continuous/intel-media-mini-$PKG_TYPE"
 
 echo "Installing debloated pckages..."
 echo "---------------------------------------------------------------"
@@ -64,6 +57,10 @@ wget --retry-connrefused --tries=30 "$LIBXML_URL" -O  ./libxml2.pkg.tar.zst
 wget --retry-connrefused --tries=30 "$FFMPEG_URL" -O  ./ffmpeg.pkg.tar.zst
 wget --retry-connrefused --tries=30 "$OPUS_URL"   -O  ./opus.pkg.tar.zst
 wget --retry-connrefused --tries=30 "$MESA_URL"   -O  ./mesa.pkg.tar.zst
+
+if [ "$ARCH" = 'x86_64' ]; then
+	wget --retry-connrefused --tries=30 "$INTEL_MEDIA_URL" -O ./intel-media.pkg.tar.zst
+fi
 
 pacman -U --noconfirm ./*.pkg.tar.zst
 rm -f ./*.pkg.tar.zst
