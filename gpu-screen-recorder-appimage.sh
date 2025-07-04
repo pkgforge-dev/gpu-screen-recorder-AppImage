@@ -56,7 +56,6 @@ mkdir -p ./AppDir/share/icons/hicolor/32x32 && (
 	#!/bin/sh
 	set -e
 	APPDIR="$(cd "${0%/*}" && echo "$PWD")"
-	export LIBVA_DRIVERS_PATH="$APPDIR/shared/lib:$APPDIR/shared/lib/dri"
 	BIN="${ARGV0:-$0}"
 	BIN="${BIN#./}"
 	unset ARGV0
@@ -78,6 +77,7 @@ mkdir -p ./AppDir/share/icons/hicolor/32x32 && (
 	# hack to get capabities working
 	if [ ! -f /tmp/.gsr-appimage-hack/sharun ]; then
 	        cp "$APPDIR"/sharun* ./
+		cp "$APPDIR"/.env    ./
 	        ln -f ./sharun  ./bin/gpu-screen-recorder
 	        ln -f ./sharun  ./bin/gpu-screen-recorder-gtk
 	        ln -f ./sharun  ./bin/gsr-dbus-server
@@ -111,6 +111,8 @@ mkdir -p ./AppDir/share/icons/hicolor/32x32 && (
 	        exec ./bin/gpu-screen-recorder-gtk "$@"
 	fi
 	EOF
+
+	echo 'LIBVA_DRIVERS_PATH=${SHARUN_DIR}/shared/lib:${SHARUN_DIR}/shared/lib/dri' >> ./.env
 
 	chmod +x ./AppRun
 	./sharun -g
