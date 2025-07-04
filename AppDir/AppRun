@@ -6,7 +6,7 @@ BIN="${ARGV0:-$0}"
 BIN="${BIN#./}"
 unset ARGV0
 
-dependencies="getcap pkexec"
+dependencies="getcap pkexec ln mkdir"
 for dep in $dependencies; do
 	if ! command -v $dep 1>/dev/null; then
 		>&2 echo "ERROR: Missing dependency '$dep'"
@@ -15,33 +15,38 @@ for dep in $dependencies; do
 	fi
 done
 
-mkdir -p /tmp/.gsr-appimage-hack/bin
+# gsr binaries were patched to look for data files in '/tmp/._gsr'
+ln -sfn "$APPDIR"/share /tmp/._gsr
 
-# change working dir since we did binary patching
-cd /tmp/.gsr-appimage-hack
+# gsr needs capabilities, so this ugly hack is needed for that
+# TODO detect when /tmp is mounted with nonsuid and look for another place
+WORKAROUND_PATH="/tmp/.gsr-appimage-hack"
+mkdir -p "$WORKAROUND_PATH"/bin
 
 # hack to get capabities working
-if [ ! -f /tmp/.gsr-appimage-hack/sharun ]; then
-	cp "$APPDIR"/sharun* ./
-	cp "$APPDIR"/.env    ./
-	ln -f ./sharun  ./bin/gpu-screen-recorder
-	ln -f ./sharun  ./bin/gpu-screen-recorder-gtk
-	ln -f ./sharun  ./bin/gsr-dbus-server
-	ln -f ./sharun  ./bin/gsr-notify
-	ln -f ./sharun  ./bin/gsr-ui
-	ln -f ./sharun  ./bin/gsr-cli
-	ln -f ./sharun2 ./bin/gsr-global-hotkeys
-	ln -f ./sharun3 ./bin/gsr-kms-server
+if [ ! -f "$WORKAROUND_PATH"/sharun ]; then
+	cp "$APPDIR"/sharun*   "$WORKAROUND_PATH"
+	cp "$APPDIR"/.env      "$WORKAROUND_PATH"
+	ln -f "$WORKAROUND_PATH"/sharun  "$WORKAROUND_PATH"/bin/gpu-screen-recorder
+	ln -f "$WORKAROUND_PATH"/sharun  "$WORKAROUND_PATH"/bin/gpu-screen-recorder-gtk
+	ln -f "$WORKAROUND_PATH"/sharun  "$WORKAROUND_PATH"/bin/gsr-dbus-server
+	ln -f "$WORKAROUND_PATH"/sharun  "$WORKAROUND_PATH"/bin/gsr-notify
+	ln -f "$WORKAROUND_PATH"/sharun  "$WORKAROUND_PATH"/bin/gsr-ui
+	ln -f "$WORKAROUND_PATH"/sharun  "$WORKAROUND_PATH"/bin/gsr-cli
+	ln -f "$WORKAROUND_PATH"/sharun2 "$WORKAROUND_PATH"/bin/gsr-global-hotkeys
+	ln -f "$WORKAROUND_PATH"/sharun3 "$WORKAROUND_PATH"/bin/gsr-kms-server
 fi
 
-ln -sfn "$APPDIR"/etc     /tmp/.gsr-appimage-hack/etc
-ln -sfn "$APPDIR"/lib     /tmp/.gsr-appimage-hack/lib
-ln -sfn "$APPDIR"/share   /tmp/.gsr-appimage-hack/share
-ln -sfn "$APPDIR"/shared  /tmp/.gsr-appimage-hack/shared
+ln -sfn "$APPDIR"/etc     "$WORKAROUND_PATH"/etc
+ln -sfn "$APPDIR"/lib     "$WORKAROUND_PATH"/lib
+ln -sfn "$APPDIR"/share   "$WORKAROUND_PATH"/share
+ln -sfn "$APPDIR"/shared  "$WORKAROUND_PATH"/shared
 
-if [ -z "$(getcap /tmp/.gsr-appimage-hack/bin/*)" ]; then
-	pkexec sh -c 'setcap cap_setuid+ep /tmp/.gsr-appimage-hack/bin/gsr-global-hotkeys \
-		&& setcap cap_sys_admin+ep /tmp/.gsr-appimage-hack/bin/gsr-kms-server'
+if [ -z "$(getcap "$WORKAROUND_PATH"/bin/*)" ]; then
+	pkexec sh -c "
+		setcap cap_setuid+ep '$WORKAROUND_PATH'/bin/gsr-global-hotkeys
+		setcap cap_sys_admin+ep '$WORKAROUND_PATH'/bin/gsr-kms-server
+	"
 fi
 
 # This doesn't work because this program uses pidof internall, so when ARGV0 is
@@ -49,10 +54,10 @@ fi
 #if [ -f ./bin/"$BIN" ]; then
 #        exec ./bin/"$BIN" "$@"
 
-if [ -n "$1" ] && [ -f ./bin/"$1" ]; then
+if [ -n "$1" ] && [ -f "$WORKAROUND_PATH"/bin/"$1" ]; then
 	BIN="$1"
 	shift
-	exec ./bin/"$BIN" "$@"
+	exec "$WORKAROUND_PATH"/bin/"$BIN" "$@"
 else
-	exec ./bin/gpu-screen-recorder-gtk "$@"
+	exec "$WORKAROUND_PATH"/bin/gpu-screen-recorder-gtk "$@"
 fi
