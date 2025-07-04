@@ -77,7 +77,7 @@ mkdir -p ./AppDir/share/icons/hicolor/32x32 && (
 	# hack to get capabities working
 	if [ ! -f /tmp/.gsr-appimage-hack/sharun ]; then
 	        cp "$APPDIR"/sharun* ./
-		cp "$APPDIR"/.env    ./
+	        cp "$APPDIR"/.env    ./
 	        ln -f ./sharun  ./bin/gpu-screen-recorder
 	        ln -f ./sharun  ./bin/gpu-screen-recorder-gtk
 	        ln -f ./sharun  ./bin/gsr-dbus-server
