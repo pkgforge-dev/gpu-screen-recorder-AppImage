@@ -26,7 +26,7 @@ fi
 # gsr needs capabilities, so this ugly hack is needed for that
 if ! grep -q '/tmp .*nosuid' /proc/mounts; then
 	WORKAROUND_PATH="/tmp/.gsr-appimage-hack"
-elif [ -w /var/tmp ] && ! grep -E '/var/tmp .*nosuid|/var .*nosuid' /proc/mounts; then
+elif [ -w /var/tmp ] && ! grep -qE '/var/tmp .*nosuid|/var .*nosuid' /proc/mounts; then
 	WORKAROUND_PATH="/var/tmp/.gsr-appimage-hack"
 else
 	WORKAROUND_PATH="${XDG_CACHE_HOME:-$HOME/.cache}"/gsr-appimage-hack
