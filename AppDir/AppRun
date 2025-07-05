@@ -19,7 +19,7 @@ done
 ln -sfn "$APPDIR"/share /tmp/._gsr
 
 # gsr needs capabilities, so this ugly hack is needed for that
-if grep '/tmp .*nosuid' /proc/mounts; then
+if grep -q '/tmp .*nosuid' /proc/mounts; then
 	WORKAROUND_PATH="${XDG_CACHE_HOME:-$HOME/.cache}"/gsr-appimage-hack
 else
 	WORKAROUND_PATH="/tmp/.gsr-appimage-hack"
