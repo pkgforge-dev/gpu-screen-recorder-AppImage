@@ -15,6 +15,14 @@ for dep in $dependencies; do
 	fi
 done
 
+_cleanup() {
+	if [ -d "$WORKAROUND_PATH" ]; then
+		rm -rf "$WORKAROUND_PATH"
+	fi
+}
+
+trap _cleanup INT TERM EXIT
+
 # gsr binaries were patched to look for data files in '/tmp/._gsr'
 ln -sfn "$APPDIR"/share /tmp/._gsr
 
@@ -65,5 +73,3 @@ if [ -n "$1" ] && [ -f "$WORKAROUND_PATH"/bin/"$1" ]; then
 else
 	"$WORKAROUND_PATH"/bin/gpu-screen-recorder-gtk "$@"
 fi
-
-rm -rf "$WORKAROUND_PATH"
