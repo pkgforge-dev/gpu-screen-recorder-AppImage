@@ -61,7 +61,7 @@ fi
 if [ -n "$1" ] && [ -f "$WORKAROUND_PATH"/bin/"$1" ]; then
 	BIN="$1"
 	shift
-	"$WORKAROUND_PATH"/bin/"$BIN" "$@"
+	exec "$WORKAROUND_PATH"/bin/"$BIN" "$@"
 else
-	"$WORKAROUND_PATH"/bin/gpu-screen-recorder-gtk "$@"
+	exec "$WORKAROUND_PATH"/bin/gpu-screen-recorder-gtk "$@"
 fi
