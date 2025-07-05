@@ -6,7 +6,7 @@ BIN="${ARGV0:-$0}"
 BIN="${BIN#./}"
 unset ARGV0
 
-dependencies="getcap pkexec ln mkdir grep rm"
+dependencies="getcap pkexec ln mkdir grep"
 for dep in $dependencies; do
 	if ! command -v $dep 1>/dev/null; then
 		>&2 echo "ERROR: Missing dependency '$dep'"
@@ -14,14 +14,6 @@ for dep in $dependencies; do
 		exit 1
 	fi
 done
-
-_cleanup() {
-	if [ -d "$WORKAROUND_PATH" ]; then
-		rm -rf "$WORKAROUND_PATH"
-	fi
-}
-
-trap _cleanup INT TERM EXIT
 
 # gsr binaries were patched to look for data files in '/tmp/._gsr'
 ln -sfn "$APPDIR"/share /tmp/._gsr
