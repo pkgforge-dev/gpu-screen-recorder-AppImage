@@ -6,7 +6,7 @@ BIN="${ARGV0:-$0}"
 BIN="${BIN#./}"
 unset ARGV0
 
-dependencies="getcap pkexec ln mkdir"
+dependencies="getcap pkexec ln mkdir grep"
 for dep in $dependencies; do
 	if ! command -v $dep 1>/dev/null; then
 		>&2 echo "ERROR: Missing dependency '$dep'"
@@ -19,8 +19,12 @@ done
 ln -sfn "$APPDIR"/share /tmp/._gsr
 
 # gsr needs capabilities, so this ugly hack is needed for that
-# TODO detect when /tmp is mounted with nonsuid and look for another place
-WORKAROUND_PATH="/tmp/.gsr-appimage-hack"
+if grep -q '/tmp .*nosuid' /proc/mounts; then
+	WORKAROUND_PATH="${XDG_CACHE_HOME:-$HOME/.cache}"/gsr-appimage-hack
+else
+	WORKAROUND_PATH="/tmp/.gsr-appimage-hack"
+fi
+
 mkdir -p "$WORKAROUND_PATH"/bin
 
 # hack to get capabities working
