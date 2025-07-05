@@ -2,7 +2,7 @@
 
 set -ex
 
-export ARCH="$(uname -m)"
+ARCH="$(uname -m)"
 URUNTIME="https://github.com/VHSgunzo/uruntime/releases/latest/download/uruntime-appimage-dwarfs-$ARCH"
 URUNTIME_LITE="https://github.com/VHSgunzo/uruntime/releases/latest/download/uruntime-appimage-dwarfs-lite-$ARCH"
 UPINFO="gh-releases-zsync|$(echo $GITHUB_REPOSITORY | tr '/' '|')|latest|*$ARCH.AppImage.zsync"
@@ -45,75 +45,11 @@ mkdir -p ./AppDir/share/icons/hicolor/32x32 && (
 	# hack
 	cp ./sharun  ./sharun2
 	cp ./sharun  ./sharun3
-	ln ./sharun2 ./bin/gsr-global-hotkeys
-	ln ./sharun3 ./bin/gsr-kms-server
 
 	# sus
-	sed -i 's|/usr/share|././/share|g' ./shared/bin/*
-
-	# Prepare sharun
-	cat > ./AppRun <<-'EOF'
-	#!/bin/sh
-	set -e
-	APPDIR="$(cd "${0%/*}" && echo "$PWD")"
-	BIN="${ARGV0:-$0}"
-	BIN="${BIN#./}"
-	unset ARGV0
-
-	dependencies="getcap pkexec"
-	for dep in $dependencies; do
-		if ! command -v $dep 1>/dev/null; then
-			>&2 echo "ERROR: Missing dependency '$dep'"
-			notify-send -u critical "ERROR: Missing dependency '$dep'"
-			exit 1
-		fi
-	done
-
-	mkdir -p /tmp/.gsr-appimage-hack/bin
-
-	# change working dir since we did binary patching
-	cd /tmp/.gsr-appimage-hack
-
-	# hack to get capabities working
-	if [ ! -f /tmp/.gsr-appimage-hack/sharun ]; then
-	        cp "$APPDIR"/sharun* ./
-	        cp "$APPDIR"/.env    ./
-	        ln -f ./sharun  ./bin/gpu-screen-recorder
-	        ln -f ./sharun  ./bin/gpu-screen-recorder-gtk
-	        ln -f ./sharun  ./bin/gsr-dbus-server
-	        ln -f ./sharun  ./bin/gsr-notify
-	        ln -f ./sharun  ./bin/gsr-ui
-	        ln -f ./sharun  ./bin/gsr-cli
-	        ln -f ./sharun2 ./bin/gsr-global-hotkeys
-	        ln -f ./sharun3 ./bin/gsr-kms-server
-	fi
-
-	ln -sfn "$APPDIR"/etc     /tmp/.gsr-appimage-hack/etc
-	ln -sfn "$APPDIR"/lib     /tmp/.gsr-appimage-hack/lib
-	ln -sfn "$APPDIR"/share   /tmp/.gsr-appimage-hack/share
-	ln -sfn "$APPDIR"/shared  /tmp/.gsr-appimage-hack/shared
-
-	if [ -z "$(getcap /tmp/.gsr-appimage-hack/bin/*)" ]; then
-	        pkexec sh -c 'setcap cap_setuid+ep /tmp/.gsr-appimage-hack/bin/gsr-global-hotkeys \
-	                && setcap cap_sys_admin+ep /tmp/.gsr-appimage-hack/bin/gsr-kms-server'
-	fi
-
-	# This doesn't work because this program uses pidof internall, so when ARGV0 is
-	# gsr-ui the program detects the pidof of the AppImage as the actual binary wtf
-	#if [ -f ./bin/"$BIN" ]; then
-	#        exec ./bin/"$BIN" "$@"
-
-	if [ -n "$1" ] && [ -f ./bin/"$1" ]; then
-	        BIN="$1"
-	        shift
-	        exec ./bin/"$BIN" "$@"
-	else
-	        exec ./bin/gpu-screen-recorder-gtk "$@"
-	fi
-	EOF
+	sed -i 's|/usr/share|/tmp/._gsr|g' ./shared/bin/*
 
 	echo 'LIBVA_DRIVERS_PATH=${SHARUN_DIR}/shared/lib:${SHARUN_DIR}/shared/lib/dri' >> ./.env
-
 	chmod +x ./AppRun
 	./sharun -g
 )
