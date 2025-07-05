@@ -38,7 +38,10 @@ pacman -Syu --noconfirm       \
 	zsync
 
 case "$ARCH" in
-	'x86_64')  PKG_TYPE='x86_64.pkg.tar.zst';;
+	'x86_64')
+		PKG_TYPE='x86_64.pkg.tar.zst'
+		pacman -Syu --noconfirm libva-intel-driver
+		;;
 	'aarch64') PKG_TYPE='aarch64.pkg.tar.xz';;
 	''|*) echo "Unknown arch: $ARCH"; exit 1;;
 esac
