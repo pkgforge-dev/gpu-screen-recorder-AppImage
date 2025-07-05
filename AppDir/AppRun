@@ -6,11 +6,11 @@ BIN="${ARGV0:-$0}"
 BIN="${BIN#./}"
 unset ARGV0
 
-dependencies="getcap pkexec ln mkdir grep"
+dependencies="setcap getcap pkexec ln mkdir grep"
 for dep in $dependencies; do
 	if ! command -v $dep 1>/dev/null; then
 		>&2 echo "ERROR: Missing dependency '$dep'"
-		notify-send -u critical "ERROR: Missing dependency '$dep'"
+		notify-send -u critical "ERROR: Missing dependency '$dep'" 2>/dev/null
 		exit 1
 	fi
 done
@@ -20,7 +20,8 @@ if [ -w /tmp ]; then
 	ln -sfn "$APPDIR"/share /tmp/._gsr
 else
 	>&2 echo "ERROR: We need write access to /tmp to make a symlink"
-	notify-send -u critical "ERROR: We need write access to /tmp to make a symlink"
+	notify-send -u critical "ERROR: We need write access to /tmp to make a symlink" 2>/dev/null
+	exit 1
 fi
 
 # gsr needs capabilities, so this ugly hack is needed for that
