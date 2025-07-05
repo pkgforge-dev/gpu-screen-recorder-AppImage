@@ -16,12 +16,17 @@ for dep in $dependencies; do
 done
 
 # gsr binaries were patched to look for data files in '/tmp/._gsr'
-ln -sfn "$APPDIR"/share /tmp/._gsr
+if [ -w /tmp ]; then
+	ln -sfn "$APPDIR"/share /tmp/._gsr
+else
+	>&2 echo "ERROR: We need write access to /tmp to make a symlink"
+	notify-send -u critical "ERROR: We need write access to /tmp to make a symlink"
+fi
 
 # gsr needs capabilities, so this ugly hack is needed for that
-if [ -d /tmp ] && ! grep -q '/tmp .*nosuid' /proc/mounts; then
+if ! grep -q '/tmp .*nosuid' /proc/mounts; then
 	WORKAROUND_PATH="/tmp/.gsr-appimage-hack"
-elif [ -d /var/tmp ] && ! grep -q '/var .*nosuid' /proc/mounts; then
+elif [ -w /var/tmp ] && ! grep -q '/var .*nosuid' /proc/mounts; then
 	WORKAROUND_PATH="/var/tmp/.gsr-appimage-hack"
 else
 	WORKAROUND_PATH="${XDG_CACHE_HOME:-$HOME/.cache}"/gsr-appimage-hack
