@@ -63,7 +63,7 @@ fi
 
 if [ -f "$WORKAROUND_PATH"/bin/"$BIN" ]; then
         exec "$WORKAROUND_PATH"/bin/"$BIN" "$@"
-if [ -n "$1" ] && [ -f "$WORKAROUND_PATH"/bin/"$1" ]; then
+elif [ -n "$1" ] && [ -f "$WORKAROUND_PATH"/bin/"$1" ]; then
 	BIN="$1"
 	shift
 	exec "$WORKAROUND_PATH"/bin/"$BIN" "$@"
