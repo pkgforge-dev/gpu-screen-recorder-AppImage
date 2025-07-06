@@ -1,12 +1,17 @@
 # gpu-screen-recorder-AppImage
 
-Because this application uses `pidof` to find if existing binaries are running, it is not possible to use `ARGV0` to launch the multiple different binaries in this AppImage. 
-
 * The AppImage defaults to running `gpu-screen-recorder-gtk`.
 
-* in order to launch the ui overlay you need to pass `gsr-ui` as first argument to the AppImage: 
+* in order to launch the ui overlay you can:
 
 ```
+# symlink or rename the appimage as 'gsr-ui'
+ln -s ./gpu-screen-recorder-anylinux-x86_64.AppImage ./gsr-ui
+./gsr-ui
+```
+
+```
+# pass 'gsr-ui' as first argument to the AppImage
 ./gpu-screen-recorder-anylinux-x86_64.AppImage gsr-ui
 ```
 
