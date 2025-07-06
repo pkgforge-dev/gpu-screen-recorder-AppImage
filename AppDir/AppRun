@@ -61,11 +61,8 @@ if [ -z "$(getcap "$WORKAROUND_PATH"/bin/*)" ]; then
 	"
 fi
 
-# This doesn't work because this program uses pidof internall, so when ARGV0 is
-# gsr-ui the program detects the pidof of the AppImage as the actual binary wtf
-#if [ -f ./bin/"$BIN" ]; then
-#        exec ./bin/"$BIN" "$@"
-
+if [ -f "$WORKAROUND_PATH"/bin/"$BIN" ]; then
+        exec "$WORKAROUND_PATH"/bin/"$BIN" "$@"
 if [ -n "$1" ] && [ -f "$WORKAROUND_PATH"/bin/"$1" ]; then
 	BIN="$1"
 	shift
