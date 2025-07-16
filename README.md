@@ -1,4 +1,11 @@
-# gpu-screen-recorder-AppImage
+# gpu-screen-recorder-AppImage 🐧
+
+[![GitHub Downloads](https://img.shields.io/github/downloads/pkgforge-dev/gpu-screen-recorder-AppImage/total?logo=github&label=GitHub%20Downloads)](https://github.com/pkgforge-dev/gpu-screen-recorder-AppImage/releases/latest)
+[![CI Build Status](https://github.com//pkgforge-dev/gpu-screen-recorder-AppImage/actions/workflows/blank.yml/badge.svg)](https://github.com/pkgforge-dev/gpu-screen-recorder-AppImage/releases/latest)
+
+* [Latest Stable Release](https://github.com/pkgforge-dev/gpu-screen-recorder-AppImage/releases/latest)
+
+---
 
 * The AppImage defaults to running `gpu-screen-recorder-gtk`.
 
