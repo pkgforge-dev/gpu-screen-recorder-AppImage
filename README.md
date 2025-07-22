@@ -46,3 +46,7 @@ This appimage works without fuse2 as it can use fuse3 instead, it can also work 
   </a>
 </details>
 
+---
+
+More at: [AnyLinux-AppImages](https://pkgforge-dev.github.io/Anylinux-AppImages/) 
+
