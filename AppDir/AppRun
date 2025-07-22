@@ -30,7 +30,7 @@ _error() {
 	exit 1
 }
 
-dependencies="setcap getcap ln mkdir grep t"
+dependencies="setcap getcap ln mkdir grep"
 for dep in $dependencies; do
 	if ! command -v $dep 1>/dev/null; then
 		_error "Missing dependency '$dep'"
