@@ -30,6 +30,40 @@ _error() {
 	exit 1
 }
 
+_check_caps() {
+	if [ -z "$(getcap "$WORKAROUND_PATH"/bin/*)" ]; then
+		if command -v pkexec 1>/dev/null; then
+			SUDOCMD="pkexec"
+		elif command -v lxqt-sudo 1>/dev/null; then
+			SUDOCMD="lxqt-sudo"
+		elif command -v sudo 1>/dev/null; then
+			SUDOCMD="sudo"
+		elif command -v doas 1>/dev/null; then
+			SUDOCMD="doas"
+		else
+			>&2 echo "No 'pkexec', 'lxqt-sudo', 'sudo' or 'doas' found! Install one"
+			>&2 echo "We are going to continue but things will likely to break"
+			return 0
+		fi
+	
+		# make sure we are in a terminal when pkexec and lxqt-sudo are not found
+		if [ "$SUDOCMD" != "pkexec" ] && [ "$SUDOCMD" != "lxqt-sudo" ]; then
+			if [ -t 0 ]; then
+				echo "'gsr-global-hotkeys' and 'gsr-kms-server' need capabilities for"
+				echo "screen recording to work which needs elevated rights, because"
+				echo "'pkexec' and 'lxqt-sudo' are NOT present will be using '$SUDOCMD'..."
+			else
+				_error "Missing 'pkexec' and 'lxqt-sudo', run '${APPIMAGE##*/}' from the terminal"
+			fi
+		fi
+	
+		"$SUDOCMD" sh -c "
+			setcap cap_setuid+ep '$WORKAROUND_PATH'/bin/gsr-global-hotkeys
+			setcap cap_sys_admin+ep '$WORKAROUND_PATH'/bin/gsr-kms-server
+		"
+	fi
+}
+
 dependencies="setcap getcap ln mkdir grep"
 for dep in $dependencies; do
 	if ! command -v $dep 1>/dev/null; then
@@ -74,35 +108,7 @@ ln -sfn "$APPDIR"/lib     "$WORKAROUND_PATH"/lib
 ln -sfn "$APPDIR"/share   "$WORKAROUND_PATH"/share
 ln -sfn "$APPDIR"/shared  "$WORKAROUND_PATH"/shared
 
-if [ -z "$(getcap "$WORKAROUND_PATH"/bin/*)" ]; then
-	if command -v pkexec 1>/dev/null; then
-		SUDOCMD="pkexec"
-	elif command -v lxqt-sudo 1>/dev/null; then
-		SUDOCMD="lxqt-sudo"
-	elif command -v sudo 1>/dev/null; then
-		SUDOCMD="sudo"
-	elif command -v doas 1>/dev/null; then
-		SUDOCMD="doas"
-	else
-		_error "No 'pkexec', 'lxqt-sudo', 'sudo' or 'doas' found! Install one"
-	fi
-
-	# make sure we are in a terminal when pkexec is not found
-	if [ "$SUDOCMD" != "pkexec" ] && [ "$SUDOCMD" != "lxqt-sudo" ]; then
-		if [ -t 0 ]; then
-			echo "'gsr-global-hotkeys' and 'gsr-kms-server' need capabilities for"
-			echo "screen recording to work which needs elevated rights, because"
-			echo "'pkexec' and 'lxqt-sudo' are NOT present will be using '$SUDOCMD'..."
-		else
-			_error "Missing 'pkexec' and 'lxqt-sudo', run '${APPIMAGE##*/}' from the terminal"
-		fi
-	fi
-
-	"$SUDOCMD" sh -c "
-		setcap cap_setuid+ep '$WORKAROUND_PATH'/bin/gsr-global-hotkeys
-		setcap cap_sys_admin+ep '$WORKAROUND_PATH'/bin/gsr-kms-server
-	"
-fi
+_check_caps
 
 if [ -f "$WORKAROUND_PATH"/bin/"$BIN" ]; then
 	exec "$WORKAROUND_PATH"/bin/"$BIN" "$@"
