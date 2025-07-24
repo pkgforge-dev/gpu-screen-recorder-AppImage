@@ -42,7 +42,7 @@ _check_caps() {
 			SUDOCMD="doas"
 		else
 			>&2 echo "No 'pkexec', 'lxqt-sudo', 'sudo' or 'doas' found! Install one"
-			>&2 echo "We are going to continue but things will likely to break"
+			>&2 echo "We are going to continue but things will likely break"
 			return 0
 		fi
 	
