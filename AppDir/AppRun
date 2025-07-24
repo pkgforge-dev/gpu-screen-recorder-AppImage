@@ -6,12 +6,68 @@ BIN="${ARGV0:-$0}"
 BIN="${BIN#./}"
 unset ARGV0
 
-dependencies="setcap getcap pkexec ln mkdir grep"
+_error() {
+	>&2 echo "$*"
+
+	if command -v notify-send 1>/dev/null; then
+		notify-send -u critical "ERROR: $*" >/dev/null 2>&1
+	elif command -v kdialog 1>/dev/null; then
+		kdialog --error "ERROR: $*" >/dev/null 2>&1
+	elif command -v zenity 1>/dev/null; then
+		zenity --error --text "ERROR: $*" >/dev/null 2>&1
+	elif command -v rofi 1>/dev/null; then
+		rofi -e "ERROR: $*" >/dev/null 2>&1
+	elif command -v dmenu 1>/dev/null; then
+		echo "ERROR: $*" | dmenu >/dev/null 2>&1
+	elif command -v xmessage 1>/dev/null; then
+		xmessage -center "ERROR: $*" >/dev/null 2>&1
+	elif command -v xterm 1>/dev/null; then
+		xterm -T "ERROR" -e "echo \"ERROR: $*\"; read" >/dev/null 2>&1
+	else
+		echo "$*" > "$HOME"/"${APPIMAGE##*/}"-ERROR-MESSAGE
+	fi
+
+	exit 1
+}
+
+_check_caps() {
+	if [ -z "$(getcap "$WORKAROUND_PATH"/bin/*)" ]; then
+		if command -v pkexec 1>/dev/null; then
+			SUDOCMD="pkexec"
+		elif command -v lxqt-sudo 1>/dev/null; then
+			SUDOCMD="lxqt-sudo"
+		elif command -v sudo 1>/dev/null; then
+			SUDOCMD="sudo"
+		elif command -v doas 1>/dev/null; then
+			SUDOCMD="doas"
+		else
+			>&2 echo "No 'pkexec', 'lxqt-sudo', 'sudo' or 'doas' found! Install one"
+			>&2 echo "We are going to continue but things will likely break"
+			return 0
+		fi
+	
+		# make sure we are in a terminal when pkexec and lxqt-sudo are not found
+		if [ "$SUDOCMD" != "pkexec" ] && [ "$SUDOCMD" != "lxqt-sudo" ]; then
+			if [ -t 0 ]; then
+				echo "'gsr-global-hotkeys' and 'gsr-kms-server' need capabilities for"
+				echo "screen recording to work which needs elevated rights, because"
+				echo "'pkexec' and 'lxqt-sudo' are NOT present will be using '$SUDOCMD'..."
+			else
+				_error "Missing 'pkexec' and 'lxqt-sudo', run '${APPIMAGE##*/}' from the terminal"
+			fi
+		fi
+	
+		"$SUDOCMD" sh -c "
+			setcap cap_setuid+ep '$WORKAROUND_PATH'/bin/gsr-global-hotkeys
+			setcap cap_sys_admin+ep '$WORKAROUND_PATH'/bin/gsr-kms-server
+		"
+	fi
+}
+
+dependencies="setcap getcap ln mkdir grep"
 for dep in $dependencies; do
 	if ! command -v $dep 1>/dev/null; then
-		>&2 echo "ERROR: Missing dependency '$dep'"
-		notify-send -u critical "ERROR: Missing dependency '$dep'" 2>/dev/null
-		exit 1
+		_error "Missing dependency '$dep'"
 	fi
 done
 
@@ -19,9 +75,7 @@ done
 if [ -w /tmp ]; then
 	ln -sfn "$APPDIR"/share /tmp/._gsr
 else
-	>&2 echo "ERROR: We need write access to /tmp to make a symlink"
-	notify-send -u critical "ERROR: We need write access to /tmp to make a symlink" 2>/dev/null
-	exit 1
+	_error "We need write access to /tmp to make a symlink"
 fi
 
 # gsr needs capabilities, so this ugly hack is needed for that
@@ -54,15 +108,10 @@ ln -sfn "$APPDIR"/lib     "$WORKAROUND_PATH"/lib
 ln -sfn "$APPDIR"/share   "$WORKAROUND_PATH"/share
 ln -sfn "$APPDIR"/shared  "$WORKAROUND_PATH"/shared
 
-if [ -z "$(getcap "$WORKAROUND_PATH"/bin/*)" ]; then
-	pkexec sh -c "
-		setcap cap_setuid+ep '$WORKAROUND_PATH'/bin/gsr-global-hotkeys
-		setcap cap_sys_admin+ep '$WORKAROUND_PATH'/bin/gsr-kms-server
-	"
-fi
+_check_caps
 
 if [ -f "$WORKAROUND_PATH"/bin/"$BIN" ]; then
-        exec "$WORKAROUND_PATH"/bin/"$BIN" "$@"
+	exec "$WORKAROUND_PATH"/bin/"$BIN" "$@"
 elif [ -n "$1" ] && [ -f "$WORKAROUND_PATH"/bin/"$1" ]; then
 	BIN="$1"
 	shift
