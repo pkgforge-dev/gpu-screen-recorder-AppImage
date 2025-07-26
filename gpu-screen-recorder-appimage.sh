@@ -49,7 +49,6 @@ mkdir -p ./AppDir/share/icons/hicolor/32x32 && (
 	# sus
 	sed -i 's|/usr/share|/tmp/._gsr|g' ./shared/bin/*
 
-	echo 'LIBVA_DRIVERS_PATH=${SHARUN_DIR}/shared/lib:${SHARUN_DIR}/shared/lib/dri' >> ./.env
 	chmod +x ./AppRun
 	./sharun -g
 )
