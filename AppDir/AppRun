@@ -92,7 +92,6 @@ mkdir -p "$WORKAROUND_PATH"/bin
 # hack to get capabities working
 if [ ! -f "$WORKAROUND_PATH"/sharun ]; then
 	cp "$APPDIR"/sharun*   "$WORKAROUND_PATH"
-	cp "$APPDIR"/.env      "$WORKAROUND_PATH"
 	ln -f "$WORKAROUND_PATH"/sharun  "$WORKAROUND_PATH"/bin/gpu-screen-recorder
 	ln -f "$WORKAROUND_PATH"/sharun  "$WORKAROUND_PATH"/bin/gpu-screen-recorder-gtk
 	ln -f "$WORKAROUND_PATH"/sharun  "$WORKAROUND_PATH"/bin/gsr-dbus-server
