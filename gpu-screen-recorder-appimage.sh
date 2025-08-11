@@ -33,8 +33,8 @@ rm -f ./AppDir/bin/gsr-global-hotkeys ./AppDir/bin/gsr-kms-server
 sed -i 's|/usr/share|/tmp/._gsr|g' ./AppDir/shared/bin/*
 
 # hack
-cp ./sharun  ./sharun2
-cp ./sharun  ./sharun3
+cp ./AppDir/sharun  ./AppDir/sharun2
+cp ./AppDir/sharun  ./AppDir/sharun3
 
 # MAKE APPIAMGE WITH URUNTIME
 wget --retry-connrefused --tries=30 "$URUNTIME" -O ./uruntime2appimage
