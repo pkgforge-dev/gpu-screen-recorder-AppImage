@@ -109,6 +109,15 @@ ln -sfn "$APPDIR"/shared  "$WORKAROUND_PATH"/shared
 
 _check_caps
 
+# call hooks
+for hook in "$APPDIR"/bin/*.hook; do
+	[ -x "$hook" ] || continue
+	case "$hook" in
+		*.bg.hook) >&2 echo "exec bg hook: $hook"; "$hook" &;;
+		*.hook)    >&2 echo "exec hook: $hook";    "$hook"  ;;
+	esac
+done
+
 if [ -f "$WORKAROUND_PATH"/bin/"$BIN" ]; then
 	exec "$WORKAROUND_PATH"/bin/"$BIN" "$@"
 elif [ -n "$1" ] && [ -f "$WORKAROUND_PATH"/bin/"$1" ]; then
