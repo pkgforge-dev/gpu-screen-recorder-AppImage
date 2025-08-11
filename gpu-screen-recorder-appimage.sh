@@ -10,6 +10,7 @@ SHARUN="https://raw.githubusercontent.com/pkgforge-dev/Anylinux-AppImages/refs/h
 VERSION="$(pacman -Q gpu-screen-recorder | awk '{print $2; exit}')"
 [ -n "$VERSION" ] && echo "$VERSION" > ~/version
 
+export ADD_HOOKS="self-updater.bg.hook"
 export UPINFO="gh-releases-zsync|${GITHUB_REPOSITORY%/*}|${GITHUB_REPOSITORY#*/}|latest|*$ARCH.AppImage.zsync"
 export OUTNAME=gpu-screen-recorder-"$VERSION"-anylinux-"$ARCH".AppImage
 export DEPLOY_OPENGL=1
@@ -19,10 +20,8 @@ export DEPLOY_PIPEWIRE=1
 mkdir -p ./AppDir/share/icons/hicolor/32x32
 cp -rv /usr/share/gsr-ui                      ./AppDir/share
 cp -rv /usr/share/icons/hicolor/32x32/status  ./AppDir/share/icons/hicolor/32x32
-
 cp -v /usr/share/applications/com.dec05eba.gpu_screen_recorder.desktop           ./AppDir
 cp -v /usr/share/icons/hicolor/128x128/apps/com.dec05eba.gpu_screen_recorder.png ./AppDir
-cp -v /usr/share/icons/hicolor/128x128/apps/com.dec05eba.gpu_screen_recorder.png ./AppDir/.DirIcon
 
 # ADD LIBRARIES
 wget --retry-connrefused --tries=30 "$SHARUN" -O ./quick-sharun
@@ -36,10 +35,6 @@ sed -i 's|/usr/share|/tmp/._gsr|g' ./AppDir/shared/bin/*
 # hack
 cp ./sharun  ./sharun2
 cp ./sharun  ./sharun3
-
-# add self update hook
-wget --retry-connrefused --tries=30 "$UPHOOK" -O ./AppDir/bin/self-updater.bg.hook
-chmod +x ./AppDir/AppRun ./AppDir/bin/*
 
 # MAKE APPIAMGE WITH URUNTIME
 wget --retry-connrefused --tries=30 "$URUNTIME" -O ./uruntime2appimage
