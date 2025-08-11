@@ -4,7 +4,6 @@ set -eux
 
 ARCH="$(uname -m)"
 URUNTIME="https://raw.githubusercontent.com/pkgforge-dev/Anylinux-AppImages/refs/heads/main/useful-tools/uruntime2appimage.sh"
-UPHOOK="https://raw.githubusercontent.com/pkgforge-dev/Anylinux-AppImages/refs/heads/main/useful-tools/self-updater.bg.hook"
 SHARUN="https://raw.githubusercontent.com/pkgforge-dev/Anylinux-AppImages/refs/heads/main/useful-tools/quick-sharun.sh"
 
 VERSION="$(pacman -Q gpu-screen-recorder | awk '{print $2; exit}')"
@@ -13,6 +12,8 @@ VERSION="$(pacman -Q gpu-screen-recorder | awk '{print $2; exit}')"
 export ADD_HOOKS="self-updater.bg.hook"
 export UPINFO="gh-releases-zsync|${GITHUB_REPOSITORY%/*}|${GITHUB_REPOSITORY#*/}|latest|*$ARCH.AppImage.zsync"
 export OUTNAME=gpu-screen-recorder-"$VERSION"-anylinux-"$ARCH".AppImage
+export DESKTOP=/usr/share/applications/com.dec05eba.gpu_screen_recorder.desktop 
+export ICON=/usr/share/icons/hicolor/128x128/apps/com.dec05eba.gpu_screen_recorder.png
 export DEPLOY_OPENGL=1
 export DEPLOY_PIPEWIRE=1
 
@@ -20,8 +21,6 @@ export DEPLOY_PIPEWIRE=1
 mkdir -p ./AppDir/share/icons/hicolor/32x32
 cp -rv /usr/share/gsr-ui                      ./AppDir/share
 cp -rv /usr/share/icons/hicolor/32x32/status  ./AppDir/share/icons/hicolor/32x32
-cp -v /usr/share/applications/com.dec05eba.gpu_screen_recorder.desktop           ./AppDir
-cp -v /usr/share/icons/hicolor/128x128/apps/com.dec05eba.gpu_screen_recorder.png ./AppDir
 
 # ADD LIBRARIES
 wget --retry-connrefused --tries=30 "$SHARUN" -O ./quick-sharun
