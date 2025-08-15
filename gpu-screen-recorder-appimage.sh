@@ -16,11 +16,7 @@ export DESKTOP=/usr/share/applications/com.dec05eba.gpu_screen_recorder.desktop
 export ICON=/usr/share/icons/hicolor/128x128/apps/com.dec05eba.gpu_screen_recorder.png
 export DEPLOY_OPENGL=1
 export DEPLOY_PIPEWIRE=1
-
-# Prepare AppDir
-mkdir -p ./AppDir/share/icons/hicolor/32x32
-cp -rv /usr/share/gsr-ui                      ./AppDir/share
-cp -rv /usr/share/icons/hicolor/32x32/status  ./AppDir/share/icons/hicolor/32x32
+export PATH_MAPPING='/usr/share/gsr-ui:${SHARUN_DIR}/share/gsr-ui:/usr/share/icons/hicolor/32x32/status:${SHARUN_DIR}/share/icons/hicolor/32x32/status:/usr/share/gsr-notify:${SHARUN_DIR}/share/gsr-notify'
 
 # ADD LIBRARIES
 wget --retry-connrefused --tries=30 "$SHARUN" -O ./quick-sharun
@@ -28,8 +24,8 @@ chmod +x ./quick-sharun
 ./quick-sharun /usr/bin/gpu-screen-recorder* /usr/bin/gsr-*
 rm -f ./AppDir/bin/gsr-global-hotkeys ./AppDir/bin/gsr-kms-server
 
-# sus
-sed -i 's|/usr/share|/tmp/._gsr|g' ./AppDir/shared/bin/*
+mkdir -p ./AppDir/share/icons/hicolor/32x32
+cp -rv /usr/share/icons/hicolor/32x32/status  ./AppDir/share/icons/hicolor/32x32
 
 # hack
 cp ./AppDir/sharun  ./AppDir/sharun2
