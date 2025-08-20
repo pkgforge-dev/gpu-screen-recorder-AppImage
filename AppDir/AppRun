@@ -86,7 +86,6 @@ mkdir -p "$WORKAROUND_PATH"/bin
 if [ ! -f "$WORKAROUND_PATH"/.done ]; then
 	cp "$APPDIR"/sharun*   "$WORKAROUND_PATH"
 	cp "$APPDIR"/.env      "$WORKAROUND_PATH"
-	cp "$APPDIR"/.preload  "$WORKAROUND_PATH"
 	ln -f "$WORKAROUND_PATH"/sharun  "$WORKAROUND_PATH"/bin/gpu-screen-recorder
 	ln -f "$WORKAROUND_PATH"/sharun  "$WORKAROUND_PATH"/bin/gpu-screen-recorder-gtk
 	ln -f "$WORKAROUND_PATH"/sharun  "$WORKAROUND_PATH"/bin/gsr-dbus-server
