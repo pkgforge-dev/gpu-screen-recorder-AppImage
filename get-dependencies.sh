@@ -2,71 +2,36 @@
 
 set -ex
 ARCH="$(uname -m)"
+EXTRA_PACKAGES="https://raw.githubusercontent.com/pkgforge-dev/Anylinux-AppImages/refs/heads/main/useful-tools/get-debloated-pkgs.sh"
 
-pacman -Syu --noconfirm       \
-	alsa-lib                \
-	base-devel              \
-	cairo                   \
-	cmake                   \
-	curl                    \
-	desktop-file-utils      \
-	ffmpeg                  \
-	gcc-libs                \
-	gdk-pixbuf2             \
-	git                     \
-	glib2                   \
-	glibc                   \
-	gtk3                    \
-	hicolor-icon-theme      \
-	libayatana-appindicator \
-	libglvnd                \
-	libpulse                \
-	libx11                  \
-	libxrandr               \
-	libxss                  \
-	mesa                    \
-	meson                   \
-	pango                   \
-	pipewire-audio          \
-	pulseaudio              \
-	pulseaudio-alsa         \
-	vulkan-headers          \
-	vulkan-icd-loader       \
-	wget                    \
-	xorg-server-xvfb        \
-	zlib                    \
+pacman -Syu --noconfirm \
+	base-devel        \
+	cmake             \
+	curl              \
+	git               \
+	libx11            \
+	libxrandr         \
+	libxss            \
+	meson             \
+	pipewire-audio    \
+	pulseaudio        \
+	pulseaudio-alsa   \
+	vulkan-headers    \
+	vulkan-icd-loader \
+	wget              \
+	xorg-server-xvfb  \
+	zlib              \
 	zsync
 
-case "$ARCH" in
-	'x86_64')
-		PKG_TYPE='x86_64.pkg.tar.zst'
-		pacman -Syu --noconfirm libva-intel-driver
-		;;
-	'aarch64') PKG_TYPE='aarch64.pkg.tar.xz';;
-	''|*) echo "Unknown arch: $ARCH"; exit 1;;
-esac
-
-LLVM_URL="https://github.com/pkgforge-dev/llvm-libs-debloated/releases/download/continuous/llvm-libs-nano-$PKG_TYPE"
-FFMPEG_URL="https://github.com/pkgforge-dev/llvm-libs-debloated/releases/download/continuous/ffmpeg-mini-$PKG_TYPE"
-LIBXML_URL="https://github.com/pkgforge-dev/llvm-libs-debloated/releases/download/continuous/libxml2-iculess-$PKG_TYPE"
-OPUS_URL="https://github.com/pkgforge-dev/llvm-libs-debloated/releases/download/continuous/opus-nano-$PKG_TYPE"
-MESA_URL="https://github.com/pkgforge-dev/llvm-libs-debloated/releases/download/continuous/mesa-nano-$PKG_TYPE"
-INTEL_MEDIA_URL="https://github.com/pkgforge-dev/llvm-libs-debloated/releases/download/continuous/intel-media-mini-$PKG_TYPE"
-
-echo "Installing debloated pckages..."
-echo "---------------------------------------------------------------"
-wget --retry-connrefused --tries=30 "$LLVM_URL"   -O  ./llvm-libs.pkg.tar.zst
-wget --retry-connrefused --tries=30 "$LIBXML_URL" -O  ./libxml2.pkg.tar.zst
-wget --retry-connrefused --tries=30 "$FFMPEG_URL" -O  ./ffmpeg.pkg.tar.zst
-wget --retry-connrefused --tries=30 "$OPUS_URL"   -O  ./opus.pkg.tar.zst
-wget --retry-connrefused --tries=30 "$MESA_URL"   -O  ./mesa.pkg.tar.zst
-
 if [ "$ARCH" = 'x86_64' ]; then
-	wget --retry-connrefused --tries=30 "$INTEL_MEDIA_URL" -O ./intel-media.pkg.tar.zst
+		pacman -Syu --noconfirm libva-intel-driver
 fi
 
-pacman -U --noconfirm ./*.pkg.tar.zst
-rm -f ./*.pkg.tar.zst
+echo "Installing debloated packages..."
+echo "---------------------------------------------------------------"
+wget --retry-connrefused --tries=30 "$EXTRA_PACKAGES" -O ./get-debloated-pkgs.sh
+chmod +x ./get-debloated-pkgs.sh
+./get-debloated-pkgs.sh --add-common --prefer-nano intel-media-driver-mini
 
 # Make the thing
 echo "Building gpu-screen-recorder..."
@@ -80,34 +45,34 @@ git clone https://aur.archlinux.org/gpu-screen-recorder.git ./gpu-screen-recorde
 	sed -i -e "s|x86_64|$ARCH|" ./PKGBUILD
 	# modify gpu-screen-recorder to build without systemd and wihtout caps
 	sed -i 's|-Dsystemd=true|-Dsystemd=false -Dcapabilities=false|' ./PKGBUILD
-	makepkg -f
+	makepkg -fs --noconfirm
 	ls -la .
-	pacman --noconfirm -U *.pkg.tar.*
+	pacman --noconfirm -U ./*.pkg.tar.*
 )
 
 # now the rest
 git clone https://aur.archlinux.org/gpu-screen-recorder-gtk.git ./gpu-gtk && (
 	cd ./gpu-gtk
 	sed -i -e "s|x86_64|$ARCH|" ./PKGBUILD
-	makepkg -f
+	makepkg -fs --noconfirm
 	ls -la .
-	pacman --noconfirm -U *.pkg.tar.*
+	pacman --noconfirm -U ./*.pkg.tar.*
 )
 
 git clone https://aur.archlinux.org/gpu-screen-recorder-notification.git ./notification && (
 	cd ./notification
 	sed -i -e "s|x86_64|$ARCH|" ./PKGBUILD
-	makepkg -f
+	makepkg -fs --noconfirm
 	ls -la .
-	pacman --noconfirm -U *.pkg.tar.*
+	pacman --noconfirm -U ./*.pkg.tar.*
 )
 
 git clone https://aur.archlinux.org/gpu-screen-recorder-ui.git ./gpu-ui && (
 	cd ./gpu-ui
 	sed -i -e "s|x86_64|$ARCH|" ./PKGBUILD
-	makepkg -f
+	makepkg -fs --noconfirm
 	ls -la .
-	pacman --noconfirm -U *.pkg.tar.*
+	pacman --noconfirm -U ./*.pkg.tar.*
 )
 
 rm -rf ./gpu-ui ./notification ./gpu-gtk ./gpu-screen-recorder
