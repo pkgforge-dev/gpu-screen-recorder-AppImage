@@ -6,6 +6,8 @@ BIN="${ARGV0:-$0}"
 BIN="${BIN##*/}"
 unset ARGV0
 
+export PATH="$PATH:/usr/local/sbin:/usr/sbin:/sbin"
+
 _error() {
 	>&2 echo "$*"
 
