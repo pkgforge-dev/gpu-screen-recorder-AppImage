@@ -4,7 +4,7 @@ set -eux
 
 ARCH="$(uname -m)"
 URUNTIME="https://raw.githubusercontent.com/pkgforge-dev/Anylinux-AppImages/refs/heads/main/useful-tools/uruntime2appimage.sh"
-SHARUN="https://raw.githubusercontent.com/pkgforge-dev/Anylinux-AppImages/refs/heads/main/useful-tools/quick-sharun.sh"
+SHARUN="https://raw.githubusercontent.com/pkgforge-dev/Anylinux-AppImages/refs/heads/enhanced-pahtmapping2/useful-tools/quick-sharun.sh"
 
 VERSION="$(pacman -Q gpu-screen-recorder | awk '{print $2; exit}')"
 [ -n "$VERSION" ] && echo "$VERSION" > ~/version
@@ -16,7 +16,6 @@ export DESKTOP=/usr/share/applications/com.dec05eba.gpu_screen_recorder.desktop
 export ICON=/usr/share/icons/hicolor/128x128/apps/com.dec05eba.gpu_screen_recorder.png
 export DEPLOY_OPENGL=1
 export DEPLOY_PIPEWIRE=1
-export PATH_MAPPING='/usr/share/gsr-ui:${SHARUN_DIR}/share/gsr-ui:/usr/share/icons/hicolor/32x32/status:${SHARUN_DIR}/share/icons/hicolor/32x32/status:/usr/share/gsr-notify:${SHARUN_DIR}/share/gsr-notify'
 
 # ADD LIBRARIES
 wget --retry-connrefused --tries=30 "$SHARUN" -O ./quick-sharun
