@@ -16,6 +16,7 @@ export DESKTOP=/usr/share/applications/com.dec05eba.gpu_screen_recorder.desktop
 export ICON=/usr/share/icons/hicolor/128x128/apps/com.dec05eba.gpu_screen_recorder.png
 export DEPLOY_OPENGL=1
 export DEPLOY_PIPEWIRE=1
+export URUNTIME_PRELOAD=1
 
 # ADD LIBRARIES
 wget --retry-connrefused --tries=30 "$SHARUN" -O ./quick-sharun
