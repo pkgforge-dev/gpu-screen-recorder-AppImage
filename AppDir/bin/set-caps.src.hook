@@ -79,3 +79,6 @@ ln -sfn "$CURRENTDIR"/share   "$WORKAROUND_PATH"/share
 ln -sfn "$CURRENTDIR"/shared  "$WORKAROUND_PATH"/shared
 
 _check_caps
+
+# override CURRENTDIR now so that the AppRun launches the right binaries
+CURRENTDIR="$WORKAROUND_PATH"
