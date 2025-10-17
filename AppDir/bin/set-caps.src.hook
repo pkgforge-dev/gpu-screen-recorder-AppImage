@@ -1,36 +1,7 @@
 #!/bin/sh
 
-set -e
-APPDIR="$(cd "${0%/*}" && echo "$PWD")"
-BIN="${ARGV0:-$0}"
-BIN="${BIN##*/}"
-unset ARGV0
-
+# some distros don't include sbin in PATH
 export PATH="$PATH:/usr/local/sbin:/usr/sbin:/sbin"
-
-_error() {
-	>&2 echo "$*"
-
-	if command -v notify-send 1>/dev/null; then
-		notify-send -u critical "ERROR: $*" >/dev/null 2>&1
-	elif command -v kdialog 1>/dev/null; then
-		kdialog --error "ERROR: $*" >/dev/null 2>&1
-	elif command -v zenity 1>/dev/null; then
-		zenity --error --text "ERROR: $*" >/dev/null 2>&1
-	elif command -v rofi 1>/dev/null; then
-		rofi -e "ERROR: $*" >/dev/null 2>&1
-	elif command -v dmenu 1>/dev/null; then
-		echo "ERROR: $*" | dmenu >/dev/null 2>&1
-	elif command -v xmessage 1>/dev/null; then
-		xmessage -center "ERROR: $*" >/dev/null 2>&1
-	elif command -v xterm 1>/dev/null; then
-		xterm -T "ERROR" -e "echo \"ERROR: $*\"; read" >/dev/null 2>&1
-	else
-		echo "$*" > "$HOME"/"${APPIMAGE##*/}"-ERROR-MESSAGE
-	fi
-
-	exit 1
-}
 
 _check_caps() {
 	if [ -z "$(getcap "$WORKAROUND_PATH"/bin/*)" ]; then
@@ -47,18 +18,19 @@ _check_caps() {
 			>&2 echo "We are going to continue but things will likely break"
 			return 0
 		fi
-	
+
 		# make sure we are in a terminal when pkexec and lxqt-sudo are not found
 		if [ "$SUDOCMD" != "pkexec" ] && [ "$SUDOCMD" != "lxqt-sudo" ]; then
 			if [ -t 0 ]; then
-				echo "'gsr-global-hotkeys' and 'gsr-kms-server' need capabilities for"
-				echo "screen recording to work which needs elevated rights, because"
-				echo "'pkexec' and 'lxqt-sudo' are NOT present will be using '$SUDOCMD'..."
+				>&2 echo "'gsr-global-hotkeys' and 'gsr-kms-server' need capabilities for"
+				>&2 echo "screen recording to work which needs elevated rights, because"
+				>&2 echo "'pkexec' and 'lxqt-sudo' are NOT present will be using '$SUDOCMD'..."
 			else
-				_error "Missing 'pkexec' and 'lxqt-sudo', run '${APPIMAGE##*/}' from the terminal"
+				notify -ne "Missing 'pkexec' and 'lxqt-sudo', run '${APPIMAGE##*/}' from the terminal"
+				exit 1
 			fi
 		fi
-	
+
 		"$SUDOCMD" sh -c "
 			setcap cap_setuid+ep '$WORKAROUND_PATH'/bin/gsr-global-hotkeys
 			setcap cap_sys_admin+ep '$WORKAROUND_PATH'/bin/gsr-kms-server
@@ -69,7 +41,8 @@ _check_caps() {
 dependencies="setcap getcap ln mkdir grep"
 for dep in $dependencies; do
 	if ! command -v $dep 1>/dev/null; then
-		_error "Missing dependency '$dep'"
+		notify -ne "Missing dependency '$dep'"
+		exit 1
 	fi
 done
 
@@ -86,9 +59,9 @@ mkdir -p "$WORKAROUND_PATH"/bin
 
 # hack to get capabities working
 if [ ! -f "$WORKAROUND_PATH"/.done ]; then
-	cp "$APPDIR"/sharun*   "$WORKAROUND_PATH"
-	cp "$APPDIR"/.env      "$WORKAROUND_PATH"
-	cp "$APPDIR"/.preload  "$WORKAROUND_PATH" 2>/dev/null || :
+	cp "$CURRENTDIR"/sharun*   "$WORKAROUND_PATH"
+	cp "$CURRENTDIR"/.env      "$WORKAROUND_PATH" 2>/dev/null || :
+	cp "$CURRENTDIR"/.preload  "$WORKAROUND_PATH" 2>/dev/null || :
 	ln -f "$WORKAROUND_PATH"/sharun  "$WORKAROUND_PATH"/bin/gpu-screen-recorder
 	ln -f "$WORKAROUND_PATH"/sharun  "$WORKAROUND_PATH"/bin/gpu-screen-recorder-gtk
 	ln -f "$WORKAROUND_PATH"/sharun  "$WORKAROUND_PATH"/bin/gsr-dbus-server
@@ -100,28 +73,9 @@ if [ ! -f "$WORKAROUND_PATH"/.done ]; then
 	:> "$WORKAROUND_PATH"/.done
 fi
 
-ln -sfn "$APPDIR"/etc     "$WORKAROUND_PATH"/etc
-ln -sfn "$APPDIR"/lib     "$WORKAROUND_PATH"/lib
-ln -sfn "$APPDIR"/share   "$WORKAROUND_PATH"/share
-ln -sfn "$APPDIR"/shared  "$WORKAROUND_PATH"/shared
+ln -sfn "$CURRENTDIR"/etc     "$WORKAROUND_PATH"/etc
+ln -sfn "$CURRENTDIR"/lib     "$WORKAROUND_PATH"/lib
+ln -sfn "$CURRENTDIR"/share   "$WORKAROUND_PATH"/share
+ln -sfn "$CURRENTDIR"/shared  "$WORKAROUND_PATH"/shared
 
 _check_caps
-
-# call hooks
-for hook in "$APPDIR"/bin/*.hook; do
-	[ -x "$hook" ] || continue
-	case "$hook" in
-		*.bg.hook) >&2 echo "exec bg hook: $hook"; "$hook" &;;
-		*.hook)    >&2 echo "exec hook: $hook";    "$hook"  ;;
-	esac
-done
-
-if [ -f "$WORKAROUND_PATH"/bin/"$BIN" ]; then
-	exec "$WORKAROUND_PATH"/bin/"$BIN" "$@"
-elif [ -n "$1" ] && [ -f "$WORKAROUND_PATH"/bin/"$1" ]; then
-	BIN="$1"
-	shift
-	exec "$WORKAROUND_PATH"/bin/"$BIN" "$@"
-else
-	exec "$WORKAROUND_PATH"/bin/gpu-screen-recorder-gtk "$@"
-fi
