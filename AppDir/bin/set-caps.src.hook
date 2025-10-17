@@ -1,8 +1,5 @@
 #!/bin/sh
 
-# some distros don't include sbin in PATH
-export PATH="$PATH:/usr/local/sbin:/usr/sbin:/sbin"
-
 _check_caps() {
 	if [ -z "$(getcap "$WORKAROUND_PATH"/bin/*)" ]; then
 		if command -v pkexec 1>/dev/null; then
@@ -54,6 +51,9 @@ elif [ -w /var/tmp ] && ! grep -qE '/var/tmp .*nosuid|/var .*nosuid' /proc/mount
 else
 	WORKAROUND_PATH="${XDG_CACHE_HOME:-$HOME/.cache}"/gsr-appimage-hack
 fi
+
+# some distros don't include sbin in PATH
+export PATH="$WORKAROUND_PATH/bin:$PATH:/usr/local/sbin:/usr/sbin:/sbin"
 
 mkdir -p "$WORKAROUND_PATH"/bin
 
