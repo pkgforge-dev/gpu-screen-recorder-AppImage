@@ -51,7 +51,8 @@ git clone https://aur.archlinux.org/gpu-screen-recorder.git ./gpu-screen-recorde
 )
 
 # now the rest
-git clone https://aur.archlinux.org/gpu-screen-recorder-gtk.git ./gpu-gtk && (
+git clone https://aur.archlinux.org/gpu-screen-recorder-gtk.git ./gpu-gtk
+(
 	cd ./gpu-gtk
 	sed -i -e "s|x86_64|$ARCH|" ./PKGBUILD
 	makepkg -fs --noconfirm
@@ -59,7 +60,8 @@ git clone https://aur.archlinux.org/gpu-screen-recorder-gtk.git ./gpu-gtk && (
 	pacman --noconfirm -U ./*.pkg.tar.*
 )
 
-git clone https://aur.archlinux.org/gpu-screen-recorder-notification.git ./notification && (
+git clone https://aur.archlinux.org/gpu-screen-recorder-notification.git ./notification
+(
 	cd ./notification
 	sed -i -e "s|x86_64|$ARCH|" ./PKGBUILD
 	makepkg -fs --noconfirm
@@ -67,7 +69,8 @@ git clone https://aur.archlinux.org/gpu-screen-recorder-notification.git ./notif
 	pacman --noconfirm -U ./*.pkg.tar.*
 )
 
-git clone https://aur.archlinux.org/gpu-screen-recorder-ui.git ./gpu-ui && (
+git clone https://aur.archlinux.org/gpu-screen-recorder-ui.git ./gpu-ui
+(
 	cd ./gpu-ui
 	sed -i -e "s|x86_64|$ARCH|" ./PKGBUILD
 	makepkg -fs --noconfirm
