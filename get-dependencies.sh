@@ -40,7 +40,8 @@ sed -i 's|EUID == 0|EUID == 69|g' /usr/bin/makepkg
 sed -i 's|-O2|-O3|; s|MAKEFLAGS=.*|MAKEFLAGS="-j$(nproc)"|; s|#MAKEFLAGS|MAKEFLAGS|' /etc/makepkg.conf
 cat /etc/makepkg.conf
 
-git clone https://aur.archlinux.org/gpu-screen-recorder.git ./gpu-screen-recorder && (
+git clone https://aur.archlinux.org/gpu-screen-recorder.git ./gpu-screen-recorder
+(
 	cd ./gpu-screen-recorder
 	sed -i -e "s|x86_64|$ARCH|" ./PKGBUILD
 	# modify gpu-screen-recorder to build without systemd and wihtout caps
