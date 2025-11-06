@@ -81,5 +81,7 @@ git clone https://aur.archlinux.org/gpu-screen-recorder-ui.git ./gpu-ui
 
 rm -rf ./gpu-ui ./notification ./gpu-gtk ./gpu-screen-recorder
 
+pacman -Q gpu-screen-recorder | awk '{print $2; exit}' > ~/version
+
 echo "All done!"
 echo "---------------------------------------------------------------"
