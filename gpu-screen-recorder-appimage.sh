@@ -3,11 +3,9 @@
 set -eux
 
 ARCH="$(uname -m)"
+VERSION="$(cat ~/version)"
 URUNTIME="https://raw.githubusercontent.com/pkgforge-dev/Anylinux-AppImages/refs/heads/main/useful-tools/uruntime2appimage.sh"
 SHARUN="https://raw.githubusercontent.com/pkgforge-dev/Anylinux-AppImages/refs/heads/main/useful-tools/quick-sharun.sh"
-
-VERSION="$(pacman -Q gpu-screen-recorder | awk '{print $2; exit}')"
-[ -n "$VERSION" ] && echo "$VERSION" > ~/version
 
 export ADD_HOOKS="self-updater.bg.hook"
 export UPINFO="gh-releases-zsync|${GITHUB_REPOSITORY%/*}|${GITHUB_REPOSITORY#*/}|latest|*$ARCH.AppImage.zsync"
