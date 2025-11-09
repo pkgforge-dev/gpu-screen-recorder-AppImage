@@ -4,7 +4,6 @@ set -eux
 
 ARCH="$(uname -m)"
 VERSION="$(cat ~/version)"
-URUNTIME="https://raw.githubusercontent.com/pkgforge-dev/Anylinux-AppImages/refs/heads/main/useful-tools/uruntime2appimage.sh"
 SHARUN="https://raw.githubusercontent.com/pkgforge-dev/Anylinux-AppImages/refs/heads/main/useful-tools/quick-sharun.sh"
 
 export ADD_HOOKS="self-updater.bg.hook"
@@ -27,9 +26,7 @@ cp ./AppDir/sharun  ./AppDir/sharun2
 cp ./AppDir/sharun  ./AppDir/sharun3
 
 # MAKE APPIAMGE WITH URUNTIME
-wget --retry-connrefused --tries=30 "$URUNTIME" -O ./uruntime2appimage
-chmod +x ./uruntime2appimage
-./uruntime2appimage
+./quick-sharun --make-appimage
 
 # make appbundle
 UPINFO="$(echo "$UPINFO" | sed 's#.AppImage.zsync#*.AppBundle.zsync#g')"
