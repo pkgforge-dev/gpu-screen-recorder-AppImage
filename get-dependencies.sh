@@ -1,8 +1,9 @@
 #!/bin/sh
 
-set -ex
+set -eu
 ARCH="$(uname -m)"
 EXTRA_PACKAGES="https://raw.githubusercontent.com/pkgforge-dev/Anylinux-AppImages/refs/heads/main/useful-tools/get-debloated-pkgs.sh"
+PACKAGE_BUILDER="https://raw.githubusercontent.com/pkgforge-dev/Anylinux-AppImages/refs/heads/main/useful-tools/make-aur-package.sh"
 
 pacman -Syu --noconfirm \
 	base-devel        \
@@ -36,50 +37,17 @@ chmod +x ./get-debloated-pkgs.sh
 # Make the thing
 echo "Building gpu-screen-recorder..."
 echo "---------------------------------------------------------------"
-sed -i 's|EUID == 0|EUID == 69|g' /usr/bin/makepkg
-sed -i 's|-O2|-O3|; s|MAKEFLAGS=.*|MAKEFLAGS="-j$(nproc)"|; s|#MAKEFLAGS|MAKEFLAGS|' /etc/makepkg.conf
-cat /etc/makepkg.conf
+wget --retry-connrefused --tries=30 "$PACKAGE_BUILDER" -O ./make-aur-package.sh
+chmod +x ./make-aur-package.sh
 
-git clone https://aur.archlinux.org/gpu-screen-recorder.git ./gpu-screen-recorder
-(
-	cd ./gpu-screen-recorder
-	sed -i -e "s|x86_64|$ARCH|" ./PKGBUILD
-	# modify gpu-screen-recorder to build without systemd and wihtout caps
-	sed -i 's|-Dsystemd=true|-Dsystemd=false -Dcapabilities=false|' ./PKGBUILD
-	makepkg -fs --noconfirm
-	ls -la .
-	pacman --noconfirm -U ./*.pkg.tar.*
-)
+# modify gpu-screen-recorder to build without systemd and wihtout caps
+PRE_BUILD_CMDS="sed -i 's|-Dsystemd=true|-Dsystemd=false -Dcapabilities=false|' ./PKGBUILD" \
+	./make-aur-package.sh gpu-screen-recorder
 
 # now the rest
-git clone https://aur.archlinux.org/gpu-screen-recorder-gtk.git ./gpu-gtk
-(
-	cd ./gpu-gtk
-	sed -i -e "s|x86_64|$ARCH|" ./PKGBUILD
-	makepkg -fs --noconfirm
-	ls -la .
-	pacman --noconfirm -U ./*.pkg.tar.*
-)
-
-git clone https://aur.archlinux.org/gpu-screen-recorder-notification.git ./notification
-(
-	cd ./notification
-	sed -i -e "s|x86_64|$ARCH|" ./PKGBUILD
-	makepkg -fs --noconfirm
-	ls -la .
-	pacman --noconfirm -U ./*.pkg.tar.*
-)
-
-git clone https://aur.archlinux.org/gpu-screen-recorder-ui.git ./gpu-ui
-(
-	cd ./gpu-ui
-	sed -i -e "s|x86_64|$ARCH|" ./PKGBUILD
-	makepkg -fs --noconfirm
-	ls -la .
-	pacman --noconfirm -U ./*.pkg.tar.*
-)
-
-rm -rf ./gpu-ui ./notification ./gpu-gtk ./gpu-screen-recorder
+./make-aur-package.sh gpu-screen-recorder-gtk
+./make-aur-package.sh gpu-screen-recorder-notification
+./make-aur-package.sh gpu-screen-recorder-ui
 
 pacman -Q gpu-screen-recorder | awk '{print $2; exit}' > ~/version
 
