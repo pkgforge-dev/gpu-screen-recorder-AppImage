@@ -18,7 +18,11 @@ export URUNTIME_PRELOAD=1
 # ADD LIBRARIES
 wget --retry-connrefused --tries=30 "$SHARUN" -O ./quick-sharun
 chmod +x ./quick-sharun
-./quick-sharun /usr/bin/gpu-screen-recorder* /usr/bin/gsr-*
+./quick-sharun \
+	/usr/bin/gpu-screen-recorder* \
+	/usr/bin/gsr-*                \
+	/usr/bin/getcap               \
+	/usr/bin/setcap
 rm -f ./AppDir/bin/gsr-global-hotkeys ./AppDir/bin/gsr-kms-server
 
 # hack
