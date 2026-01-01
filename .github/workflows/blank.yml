@@ -22,7 +22,7 @@ jobs:
             arch: aarch64
     container: ghcr.io/pkgforge-dev/archlinux:latest
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v6
 
     - name: Get dependencies
       if: always()
@@ -91,7 +91,7 @@ jobs:
               *.AppImage*
               *.AppBundle*
 
-        - uses: actions/checkout@v4
+        - uses: actions/checkout@v6
         - name: Update LATEST_VERSION
           run: |
             echo "${{ env.VERSION }}" > ./LATEST_VERSION
