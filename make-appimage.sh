@@ -8,7 +8,7 @@ export ARCH VERSION
 export ADD_HOOKS="self-updater.bg.hook"
 export OUTPATH=./dist
 export UPINFO="gh-releases-zsync|${GITHUB_REPOSITORY%/*}|${GITHUB_REPOSITORY#*/}|latest|*$ARCH.AppImage.zsync"
-export OUTNAME=gpu-screen-recorder-"$VERSION"-anylinux-"$ARCH".AppImage
+export APPNAME=gpu-screen-recorder
 export DESKTOP=/usr/share/applications/com.dec05eba.gpu_screen_recorder.desktop 
 export ICON=/usr/share/icons/hicolor/128x128/apps/com.dec05eba.gpu_screen_recorder.png
 export DEPLOY_OPENGL=1
