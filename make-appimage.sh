@@ -20,7 +20,8 @@ quick-sharun \
 	/usr/bin/gpu-screen-recorder* \
 	/usr/bin/gsr-*                \
 	/usr/bin/getcap               \
-	/usr/bin/setcap
+	/usr/bin/setcap               \
+	/usr/bin/zenity
 
 # these will be hardlinked by the hook at runtime
 rm -f ./AppDir/bin/gsr-global-hotkeys ./AppDir/bin/gsr-kms-server
