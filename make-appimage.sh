@@ -6,6 +6,7 @@ ARCH=$(uname -m)
 VERSION=$(pacman -Q gpu-screen-recorder | awk '{print $2; exit}') # example command to get version of application here
 export ARCH VERSION
 export ADD_HOOKS="self-updater.bg.hook"
+export OUTPATH=./dist
 export UPINFO="gh-releases-zsync|${GITHUB_REPOSITORY%/*}|${GITHUB_REPOSITORY#*/}|latest|*$ARCH.AppImage.zsync"
 export OUTNAME=gpu-screen-recorder-"$VERSION"-anylinux-"$ARCH".AppImage
 export DESKTOP=/usr/share/applications/com.dec05eba.gpu_screen_recorder.desktop 
