@@ -34,3 +34,6 @@ PRE_BUILD_CMDS="sed -i 's|-Dsystemd=true|-Dsystemd=false -Dcapabilities=false|' 
 make-aur-package gpu-screen-recorder-gtk
 make-aur-package gpu-screen-recorder-notification
 make-aur-package gpu-screen-recorder-ui
+
+# add zenity-rs-bin that way we always have a guaranteed GUI to ask for password to set caps
+make-aur-package zenity-rs-bin
