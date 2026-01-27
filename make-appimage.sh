@@ -15,7 +15,7 @@ export DEPLOY_PIPEWIRE=1
 export URUNTIME_PRELOAD=1
 
 # Deploy dependencies
-/quick-sharun \
+quick-sharun \
 	/usr/bin/gpu-screen-recorder* \
 	/usr/bin/gsr-*                \
 	/usr/bin/getcap               \
