@@ -4,7 +4,7 @@ _check_caps() {
 	if [ -z "$(getcap "$WORKAROUND_PATH"/bin/*)" ]; then
 		if [ "$(id -u)" = 0 ]; then
 			SUDOCMD=""
-		if command -v pkexec 1>/dev/null; then
+		elif command -v pkexec 1>/dev/null; then
 			SUDOCMD="pkexec"
 		elif command -v lxqt-sudo 1>/dev/null; then
 			SUDOCMD="lxqt-sudo"
