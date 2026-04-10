@@ -1,86 +1,59 @@
 #!/bin/sh
 
-_check_caps() {
-	if [ -z "$(getcap "$WORKAROUND_PATH"/bin/*)" ]; then
-		if [ "$(id -u)" = 0 ]; then
-			SUDOCMD=""
-		elif command -v pkexec 1>/dev/null; then
-			SUDOCMD="pkexec"
-		elif command -v lxqt-sudo 1>/dev/null; then
-			SUDOCMD="lxqt-sudo"
-		elif command -v sudo 1>/dev/null; then
-			SUDOCMD="sudo"
-		elif command -v doas 1>/dev/null; then
-			SUDOCMD="doas"
-		else
-			>&2 echo "No 'pkexec', 'lxqt-sudo', 'sudo' or 'doas' found! Install one"
-			>&2 echo "We are going to continue but things will likely break"
+_check_gsr_caps() {
+	if [ -z "$(getcap "$_workaround_path"/bin/*)" ]; then
+		if ! run_gui_sudo --check; then
+			err_msg "No 'pkexec' or 'lxqt-sudo' or 'run 0' found!"
+			err_msg "We are going to continue but things will likely break"
 			return 0
 		fi
-
-		# make sure we are in a terminal when pkexec and lxqt-sudo are not found
-		if [ "$SUDOCMD" != "pkexec" ] && [ "$SUDOCMD" != "lxqt-sudo" ] && [ -n "$SUDOCMD" ]; then
-			if [ -t 0 ]; then
-				>&2 echo "'gsr-global-hotkeys' and 'gsr-kms-server' need capabilities for"
-				>&2 echo "screen recording to work which needs elevated rights, because"
-				>&2 echo "'pkexec' and 'lxqt-sudo' are NOT present will be using '$SUDOCMD'..."
-			else
-				notify -ne "Missing 'pkexec' or 'lxqt-sudo', run '${APPIMAGE##*/}' from the terminal"
-				exit 1
-			fi
-		fi
-
-		$SUDOCMD sh -c "
-			setcap cap_setuid+ep '$WORKAROUND_PATH'/bin/gsr-global-hotkeys
-			setcap cap_sys_admin+ep '$WORKAROUND_PATH'/bin/gsr-kms-server
+		run_gui_sudo sh -c "
+			setcap cap_setuid+ep '$_workaround_path'/bin/gsr-global-hotkeys
+			setcap cap_sys_admin+ep '$_workaround_path'/bin/gsr-kms-server
 		"
 	fi
 }
 
-dependencies="setcap getcap ln mkdir grep"
-for dep in $dependencies; do
-	if ! command -v $dep 1>/dev/null; then
-		notify -ne "Missing dependency '$dep'"
-		exit 1
-	fi
+for dep in setcap getcap ln mkdir grep; do
+	is_cmd "$dep" || { notify -ne "Missing dependency: $dep"; exit 1; }
 done
 
 # gsr needs capabilities, so this ugly hack is needed for that
 if ! grep -q '/tmp .*nosuid' /proc/mounts; then
-	WORKAROUND_PATH="/tmp/.gsr-appimage-hack"
+	_workaround_path=/tmp/.gsr-appimage-hack
 elif [ -w /var/tmp ] && ! grep -qE '/var/tmp .*nosuid|/var .*nosuid' /proc/mounts; then
-	WORKAROUND_PATH="/var/tmp/.gsr-appimage-hack"
+	_workaround_path=/var/tmp/.gsr-appimage-hack
 else
-	WORKAROUND_PATH="${XDG_CACHE_HOME:-$HOME/.cache}"/gsr-appimage-hack
+	_workaround_path=$CACHEDIR/gsr-appimage-hack
 fi
 
 # some distros don't include sbin in PATH
-export PATH="$WORKAROUND_PATH/bin:$PATH:/usr/local/sbin:/usr/sbin:/sbin"
+export PATH="$_workaround_path/bin:$PATH:/usr/local/sbin:/usr/sbin:/sbin"
 
-mkdir -p "$WORKAROUND_PATH"/bin
+mkdir -p "$_workaround_path"/bin
 
 # hack to get capabities working
-if [ ! -f "$WORKAROUND_PATH"/.done ]; then
-	cp "$APPDIR"/sharun*   "$WORKAROUND_PATH"
-	cp "$APPDIR"/.env      "$WORKAROUND_PATH" 2>/dev/null || :
-	cp "$APPDIR"/.preload  "$WORKAROUND_PATH" 2>/dev/null || :
-	ln -f "$WORKAROUND_PATH"/sharun  "$WORKAROUND_PATH"/bin/gpu-screen-recorder
-	ln -f "$WORKAROUND_PATH"/sharun  "$WORKAROUND_PATH"/bin/gpu-screen-recorder-gtk
-	ln -f "$WORKAROUND_PATH"/sharun  "$WORKAROUND_PATH"/bin/gsr-dbus-server
-	ln -f "$WORKAROUND_PATH"/sharun  "$WORKAROUND_PATH"/bin/gsr-notify
-	ln -f "$WORKAROUND_PATH"/sharun  "$WORKAROUND_PATH"/bin/gsr-ui
-	ln -f "$WORKAROUND_PATH"/sharun  "$WORKAROUND_PATH"/bin/gsr-cli
-	ln -f "$WORKAROUND_PATH"/sharun2 "$WORKAROUND_PATH"/bin/gsr-global-hotkeys
-	ln -f "$WORKAROUND_PATH"/sharun3 "$WORKAROUND_PATH"/bin/gsr-kms-server
-	:> "$WORKAROUND_PATH"/.done
+if [ ! -f "$_workaround_path"/.done ]; then
+	cp "$APPDIR"/sharun*   "$_workaround_path"
+	cp "$APPDIR"/.env      "$_workaround_path" 2>/dev/null || :
+	cp "$APPDIR"/.preload  "$_workaround_path" 2>/dev/null || :
+	ln -f "$_workaround_path"/sharun  "$_workaround_path"/bin/gpu-screen-recorder
+	ln -f "$_workaround_path"/sharun  "$_workaround_path"/bin/gpu-screen-recorder-gtk
+	ln -f "$_workaround_path"/sharun  "$_workaround_path"/bin/gsr-dbus-server
+	ln -f "$_workaround_path"/sharun  "$_workaround_path"/bin/gsr-notify
+	ln -f "$_workaround_path"/sharun  "$_workaround_path"/bin/gsr-ui
+	ln -f "$_workaround_path"/sharun  "$_workaround_path"/bin/gsr-cli
+	ln -f "$_workaround_path"/sharun2 "$_workaround_path"/bin/gsr-global-hotkeys
+	ln -f "$_workaround_path"/sharun3 "$_workaround_path"/bin/gsr-kms-server
+	:> "$_workaround_path"/.done
 fi
 
-ln -sfn "$APPDIR"/etc     "$WORKAROUND_PATH"/etc
-ln -sfn "$APPDIR"/lib     "$WORKAROUND_PATH"/lib
-ln -sfn "$APPDIR"/share   "$WORKAROUND_PATH"/share
-ln -sfn "$APPDIR"/shared  "$WORKAROUND_PATH"/shared
+ln -sfn "$APPDIR"/etc     "$_workaround_path"/etc
+ln -sfn "$APPDIR"/lib     "$_workaround_path"/lib
+ln -sfn "$APPDIR"/share   "$_workaround_path"/share
+ln -sfn "$APPDIR"/shared  "$_workaround_path"/shared
 
-_check_caps
+_check_gsr_caps
 
 # override APPDIR now so that the AppRun launches the right binaries
-APPDIR="$WORKAROUND_PATH"
+APPDIR=$_workaround_path
