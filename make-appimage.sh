@@ -23,9 +23,6 @@ quick-sharun \
 	/usr/bin/setcap               \
 	/usr/lib/libturbojpeg.so*
 
-# these will be hardlinked by the hook at runtime
-rm -f ./AppDir/bin/gsr-global-hotkeys ./AppDir/bin/gsr-kms-server
-
 # Turn AppDir into AppImage
 quick-sharun --make-appimage
 
