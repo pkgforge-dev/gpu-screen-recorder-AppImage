@@ -34,17 +34,25 @@ mkdir -p "$_workaround_path"/bin
 
 # hack to get capabities working
 if [ ! -f "$_workaround_path"/.done ]; then
-	cp "$APPDIR"/sharun*   "$_workaround_path"
+	cp "$APPDIR"/sharun    "$_workaround_path"
 	cp "$APPDIR"/.env      "$_workaround_path" 2>/dev/null || :
 	cp "$APPDIR"/.preload  "$_workaround_path" 2>/dev/null || :
-	ln -f "$_workaround_path"/sharun  "$_workaround_path"/bin/gpu-screen-recorder
-	ln -f "$_workaround_path"/sharun  "$_workaround_path"/bin/gpu-screen-recorder-gtk
-	ln -f "$_workaround_path"/sharun  "$_workaround_path"/bin/gsr-dbus-server
-	ln -f "$_workaround_path"/sharun  "$_workaround_path"/bin/gsr-notify
-	ln -f "$_workaround_path"/sharun  "$_workaround_path"/bin/gsr-ui
-	ln -f "$_workaround_path"/sharun  "$_workaround_path"/bin/gsr-cli
-	ln -f "$_workaround_path"/sharun2 "$_workaround_path"/bin/gsr-global-hotkeys
-	ln -f "$_workaround_path"/sharun3 "$_workaround_path"/bin/gsr-kms-server
+	for b in "$APPDIR"/bin/gpu-* "$APPDIR"/bin/gsr-*; do
+		b=${b##*/}
+		# always run rm -f first, due to ubuntu 25.10 having broken uutils ln
+		# https://github.com/pkgforge-dev/xenia-canary-AppImage/issues/14
+		rm -f "$_workaround_path"/bin/"$b"
+		case "$b" in
+			# gsr-global-hotkeys and gsr-kms-server need capabilities
+			# so make them separate files instead of hardlinks
+			gsr-global-hotkeys|gsr-kms-server)
+				cp "$_workaround_path"/sharun "$_workaround_path"/bin/"$b"
+				;;
+			*)
+				ln -f "$_workaround_path"/sharun "$_workaround_path"/bin/"$b"
+				;;
+		esac
+	done
 	:> "$_workaround_path"/.done
 fi
 

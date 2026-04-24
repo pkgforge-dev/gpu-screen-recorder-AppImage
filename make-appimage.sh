@@ -26,10 +26,6 @@ quick-sharun \
 # these will be hardlinked by the hook at runtime
 rm -f ./AppDir/bin/gsr-global-hotkeys ./AppDir/bin/gsr-kms-server
 
-# hack since we don't want to give caps to all the binaries
-cp ./AppDir/sharun  ./AppDir/sharun2
-cp ./AppDir/sharun  ./AppDir/sharun3
-
 # Turn AppDir into AppImage
 quick-sharun --make-appimage
 
