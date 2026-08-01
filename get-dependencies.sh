@@ -23,7 +23,7 @@ pacman -Syu --noconfirm \
 	libxss                  \
 	linux-api-headers       \
 	meson                   \
-	pipewire-audio          \
+	libpipewire             \
 	pipewire-jack           \
 	vulkan-headers          \
 	zlib
