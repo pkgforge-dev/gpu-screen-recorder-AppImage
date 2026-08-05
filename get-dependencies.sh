@@ -23,6 +23,7 @@ pacman -Syu --noconfirm \
 	libxss                  \
 	linux-api-headers       \
 	meson                   \
+	nasm                    \
 	libpipewire             \
 	vulkan-headers          \
 	zlib
