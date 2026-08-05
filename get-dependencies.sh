@@ -33,7 +33,7 @@ fi
 
 echo "Installing debloated packages..."
 echo "---------------------------------------------------------------"
-get-debloated-pkgs --add-common --prefer-nano intel-media-driver-mini ffmpeg-mini
+get-debloated-pkgs --add-common --prefer-nano intel-media-driver-mini
 
 # build each gpu-screen-recorder binary manually
 REPOS_SOURCE=https://repo.dec05eba.com
@@ -60,7 +60,7 @@ build_gsr_bin() (
 	fi
 )
 
-build_gsr_bin gpu-screen-recorder -Dsystemd=false -Dcapabilities=false
+build_gsr_bin gpu-screen-recorder -Dsystemd=false -Dcapabilities=false -Dffmpeg_static=true
 build_gsr_bin gpu-screen-recorder-notification
 build_gsr_bin gpu-screen-recorder-ui
 build_gsr_bin gpu-screen-recorder-gtk
