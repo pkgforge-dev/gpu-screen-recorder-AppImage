@@ -24,7 +24,7 @@ pacman -Syu --noconfirm \
 	linux-api-headers       \
 	meson                   \
 	nasm                    \
-	libpipewire             \
+	pipewire                \
 	vulkan-headers          \
 	zlib
 
