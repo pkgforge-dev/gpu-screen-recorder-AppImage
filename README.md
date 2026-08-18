@@ -38,19 +38,11 @@ ln -s ./gpu-screen-recorder-anylinux-x86_64.AppImage ./gsr-ui
 
 ---
 
-AppImage made using [sharun](https://github.com/VHSgunzo/sharun) and its wrapper [quick-sharun](https://github.com/pkgforge-dev/Anylinux-AppImages/blob/main/useful-tools/quick-sharun.sh), which makes it extremely easy to turn any binary into a portable package reliably without using containers or similar tricks. 
+AppImage made using [quick-sharun](https://github.com/pkgforge-dev/Anylinux-AppImages/blob/main/useful-tools/quick-sharun.sh), which makes it extremely easy to turn any binary into a portable package reliably without using containers or similar tricks. 
 
 **This AppImage bundles everything and it should work on any Linux distro, including old and musl-based ones.**
 
 This AppImage doesn't require FUSE to run at all, thanks to the [uruntime](https://github.com/VHSgunzo/uruntime).
-
-It is possible that this appimage may fail to work with appimagelauncher, I recommend these alternatives instead: 
-
-* [AM](https://github.com/ivan-hc/AM) `am -i gpu-screen-recorder` or `appman -i gpu-screen-recorder`
-
-* [dbin](https://github.com/xplshn/dbin) `dbin install gpu-screen-recorder.appimage`
-
-* [soar](https://github.com/pkgforge/soar) `soar install gpu-screen-recorder`
 
 This AppImage is also supplied with a self-updater by default, so any updates to this application won't be missed, you will be prompted for permission to check for updates and if agreed you will then be notified when a new update is available.
 
