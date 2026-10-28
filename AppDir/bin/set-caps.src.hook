@@ -14,7 +14,7 @@ _check_gsr_caps() {
 	fi
 }
 
-for dep in setcap getcap ln mkdir grep; do
+for dep in setcap getcap ln mkdir grep cmp; do
 	is_cmd "$dep" || { notify -ne "Missing dependency: $dep"; exit 1; }
 done
 
@@ -33,10 +33,12 @@ export PATH="$_workaround_path/bin:$PATH:/usr/local/sbin:/usr/sbin:/sbin"
 mkdir -p "$_workaround_path"/bin
 
 # hack to get capabities working
-if [ ! -f "$_workaround_path"/.done ]; then
+# the copies must match the sharun of this AppImage, an older copy left by a
+# previous version does not use SHARUN_DIR from the environment
+if [ ! -f "$_workaround_path"/.done ] \
+  || ! cmp -s "$APPDIR"/sharun "$_workaround_path"/sharun; then
+	rm -f "$_workaround_path"/.done "$_workaround_path"/sharun
 	cp "$APPDIR"/sharun    "$_workaround_path"
-	cp "$APPDIR"/.env      "$_workaround_path" 2>/dev/null || :
-	cp "$APPDIR"/.preload  "$_workaround_path" 2>/dev/null || :
 	for b in "$APPDIR"/bin/gpu-* "$APPDIR"/bin/gsr-*; do
 		b=${b##*/}
 		# always run rm -f first, due to ubuntu 25.10 having broken uutils ln
@@ -56,12 +58,13 @@ if [ ! -f "$_workaround_path"/.done ]; then
 	:> "$_workaround_path"/.done
 fi
 
-ln -sfn "$APPDIR"/etc     "$_workaround_path"/etc
-ln -sfn "$APPDIR"/lib     "$_workaround_path"/lib
-ln -sfn "$APPDIR"/share   "$_workaround_path"/share
-ln -sfn "$APPDIR"/shared  "$_workaround_path"/shared
-
 _check_gsr_caps
+
+# the sharun copies in $_workaround_path only need to be the binaries, they
+# take everything else (libraries, payloads, .env, preload) from the real
+# AppDir through SHARUN_DIR
+SHARUN_DIR=$APPDIR
+export SHARUN_DIR
 
 # override APPDIR now so that the AppRun launches the right binaries
 APPDIR=$_workaround_path
